@@ -1,7 +1,6 @@
 //=============================================================
-// Main Decoder  –  FULLY UPGRADED
-//
-// CHANGES from original:
+// Main Decoder :
+
 //   1. ImmSrc expanded to 3 bits (supports U-type for LUI/AUIPC)
 //   2. LUI: ImmSrc=3'b100 (U-type), ALUSrc=1, ResultSrc=2'b00 (ALU result = imm)
 //   3. AUIPC: ImmSrc=3'b100 (U-type), ALUSrcA=1 (use PC as ALU operand A)
