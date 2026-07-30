@@ -27,7 +27,8 @@ wire [N-1:0] jalr_target;
 // Core Datapath (ID + EX + MEM + WB)
 //----------------------------------------------------------
 ID_EX_MEM_WB_top core (
-    .clk(clk),          .rst(rst),
+    .clk(clk),
+    .rst(rst),
     .instr(instr),
     .PC(PC),            // PC fed in for AUIPC and PC+4 link
     .ALU_result(ALU_result),
