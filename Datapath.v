@@ -9,7 +9,7 @@
 //   7. jalr_target output = ALU_result (used for JALR PC target)
 //   8. Data memory expanded to 256 words (DEPTH=256)
 //=============================================================
-module ID_EX_MEM_WB_top #(parameter N = 32)
+module Datapath #(parameter N = 32)
 (
     input  wire        clk,
     input  wire        rst,

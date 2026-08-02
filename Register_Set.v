@@ -26,3 +26,4 @@ module Register_Set
     assign rs1_data = (rs1_addr == 5'b00000) ? 32'b0 : regfile[rs1_addr];
     assign rs2_data = (rs2_addr == 5'b00000) ? 32'b0 : regfile[rs2_addr];
 endmodule
+

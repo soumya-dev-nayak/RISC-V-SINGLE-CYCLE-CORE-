@@ -1,5 +1,3 @@
-//----------SOUMYAAA---------
-
 module ALUDecoder(
 
     input [1:0] ALUop,

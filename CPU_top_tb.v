@@ -1,4 +1,26 @@
 `timescale 1ns/1ps
+`include "ALU.v"
+`include "ALUDecoder.v"
+`include "ALU_MUX.v"
+`include "CPU_Display_Top.v"
+`include "CPU_top.v"
+`include "Data_Memory.v"
+`include "Datapath.v"
+`include "IF_top.v"
+`include "Imm_Gen.v"
+`include "Instruction_Decoder.v"
+`include "Instruction_Memory.v"
+`include "MainDSecoder.v"
+`include "PC.v"
+`include "PC_Mux.v"
+`include "PC_Plus_4.v"
+`include "PC_Target.v"
+`include "PC_Top.v"
+`include "Register_Set.v"
+`include "SevenSeg_Display.v"
+`include "SrcA_MUX.v"
+`include "WriteBack_MUX.v"
+
 //=============================================================
 // Testbench  –  CPU_top  RISC-V RV32I Single-Cycle
 // FULLY UPGRADED with Cycle Monitor + Negative Number Display
@@ -10,10 +32,10 @@
 //
 // Compile:
 //   iverilog -o sim ALU.v ALUDecoder.v ALU_MUX.v SrcA_MUX.v   \
-//     CPU_top.v CPU_top_tb.v Data_Memory.v ID_EX_MEM_WB_top.v  \
-//     IF_top.v Imm_Gen.v Instruction_Decoder.v                  \
-//     Instruction_Memory.v MainDSecoder.v PC.v PC_Mux.v         \
-//     PC_Plus_4.v PC_Target.v PC_Top.v Register_Set.v           \
+//     CPU_top.v CPU_top_tb.v Data_Memory.v ID_EX_MEM_WB_top.v \
+//     IF_top.v Imm_Gen.v Instruction_Decoder.v                \
+//     Instruction_Memory.v MainDSecoder.v PC.v PC_Mux.v       \
+//     PC_Plus_4.v PC_Target.v PC_Top.v Register_Set.v         \
 //     WriteBack_MUX.v && vvp sim
 //=============================================================
 

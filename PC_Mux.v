@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+=======
+// PC MUX  (3:1)
+//
+// CHANGE: Expanded from 2:1 to 3:1 to support JAL, JALR, and branches.
+//
+>>>>>>> 3c5a1e1 (Refactor single-cycle RISC-V datapath and update CPU modules)
 // pc_sel encoding:
 //   2'b00  →  PCPlus4    (sequential execution)
 //   2'b01  →  PCTarget   (branch target = PC + Imm; also used for JAL)
