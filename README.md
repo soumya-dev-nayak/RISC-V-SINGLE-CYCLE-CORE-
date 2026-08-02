@@ -108,7 +108,7 @@ The tradeoff, of course, is clock speed: because every instruction must ripple a
 
 ---
 
-## 🧭 Documentation Index (Read Bottom-Up, Like Chapters)
+## 🧭 Documentation Index 
 
 ### Chapter 1 — Instruction Decoding
 The logic that looks at a raw 32-bit instruction word and figures out *what it means* and *what the datapath should do about it*.
