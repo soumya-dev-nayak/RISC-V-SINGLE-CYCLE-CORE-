@@ -1,5 +1,14 @@
 # PC Plus 4 (PC_Plus_4)
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-9%20Increment%20program%20counter.png" width="1100">
+</p>
+
+<p align="center">
+  <em>Figure: Increment Program Counter</em><br>
+  <em>Program Counter (PC) update stage where the next sequential instruction address (PC + 4) is generated</em>
+</p>
+
 ## Overview
 The **PC_Plus_4** module computes the default sequential next-instruction address by adding a fixed constant of `4` to the current Program Counter value. Since RISC-V instructions in the base ISA are 4 bytes (32 bits) wide, this represents the "advance to the next instruction" address calculation used when no branch or jump is taken.
 
