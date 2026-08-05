@@ -1,5 +1,14 @@
 # `Imm_Gen.v` — Immediate Generator
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-6%20Sign-extend%20the%20immediate.png" width="1100">
+</p>
+
+<p align="center">
+  <em>Figure: Sign Extension of the Immediate Value</em><br>
+  <em>Immediate generation stage showing sign extension of instruction immediate fields to 32 bits</em>
+</p>
+
 ## Overview
 `Imm_Gen` reconstructs the correctly **sign-extended, 32-bit immediate value** from a raw RISC-V instruction word, based on which of the five RV32I immediate formats applies (I, S, B, J, U). Because each instruction format scatters its immediate bits across different, non-contiguous positions of the 32-bit word (to keep `rs1`/`rs2`/`rd`/`opcode` fields aligned across formats), this module is responsible for re-assembling those bits into a single usable signed value.
 
