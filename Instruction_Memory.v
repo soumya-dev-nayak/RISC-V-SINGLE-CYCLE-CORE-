@@ -1,5 +1,3 @@
-//SOUMYAAAAA
-
 // ============================================================
 // Instruction Memory  –  FULLY UPGRADED
 // RISC-V RV32I Single-Cycle CPU
@@ -61,7 +59,7 @@ module Instruction_Memory
         //   x17 = slt(x14,x16)    = 1    (-100 < -63)
         //   Testbench PART 1: check x3==-5, x9==1, x12==-5, x13==120, x17==1
         // ============================================================
-        /*
+      /*  
         Imem[0]  = 32'hFEC00093; // addi  x1, x0, -20
         Imem[1]  = 32'h00F00113; // addi  x2, x0,  15
         Imem[2]  = 32'h002081B3; // add   x3, x1,  x2    ; -5
@@ -80,7 +78,7 @@ module Instruction_Memory
         Imem[15] = 32'h00F70833; // add   x16,x14, x15   ; -63
         Imem[16] = 32'h010728B3; // slt   x17,x14, x16   ; 1
         Imem[17] = 32'h0000006F; // jal   x0, 0          ; HALT
-        */
+       */ 
 
         // ============================================================
         // PART 2 : ARRAY SUM  (loop with JAL)
@@ -90,7 +88,7 @@ module Instruction_Memory
         //   Uses JAL x0,offset for loop (now working correctly)
         //   Testbench PART 2: check x10 == 97
         // ============================================================
-        /*
+     /*   
         Imem[0] = 32'h05000293; // addi  x5, x0, 80    ; base addr = byte 80
         Imem[1] = 32'h00500313; // addi  x6, x0, 5     ; N = 5
         Imem[2] = 32'h00000513; // addi  x10,x0, 0     ; sum = 0
@@ -104,7 +102,7 @@ module Instruction_Memory
         Imem[9] = 32'hFEDFF06F; // jal   x0, -20       ; → LOOP (byte 36-20=16) ✓
         // HALT (byte 40):
         Imem[10]= 32'h0000006F; // jal   x0, 0         ; HALT
-        */
+    */
 
         // ============================================================
         // PART 3 : COUNT NEGATIVES IN ARRAY
@@ -113,6 +111,7 @@ module Instruction_Memory
         //   bge x12,x0 detects sign bit: if arr[i]>=0 skip increment
         //   Testbench PART 3: check x10 == 4
         // ============================================================
+
         /*
         Imem[0]  = 32'h02800293; // addi  x5, x0, 40    ; base = byte 40 (word 10)
         Imem[1]  = 32'h00800313; // addi  x6, x0, 8     ; N = 8
@@ -138,6 +137,7 @@ module Instruction_Memory
         //   Result in x10
         //   Testbench PART 4: check x10 == 120
         // ============================================================
+
         /*
         Imem[0]  = 32'h00100513; // addi  x10,x0, 1     ; result=1
         Imem[1]  = 32'h00200313; // addi  x6, x0, 2     ; i=2
@@ -171,6 +171,7 @@ module Instruction_Memory
         //   Result in x10 (=a=b when done)
         //   Testbench PART 5: check x10 == 6
         // ============================================================
+        
         /*
         Imem[0] = 32'h03000293; // addi  x5, x0, 48    ; a=48
         Imem[1] = 32'h01200313; // addi  x6, x0, 18    ; b=18
@@ -269,6 +270,7 @@ module Instruction_Memory
         //   Testbench PART 7: check mem[0..4] == {-5,-3,-1,8,12}
         // ============================================================
 
+/*
         Imem[0]  = 32'h00400293; // addi  x5, x0, 4     ; N-1=4
         Imem[1]  = 32'h00000313; // addi  x6, x0, 0     ; i=0
         Imem[2]  = 32'h00400E13; // addi  x28,x0, 4     ; word_size=4
@@ -296,6 +298,7 @@ module Instruction_Memory
         Imem[20] = 32'hFBDFF06F; // jal   x0, -68       ; → OUTER (80-68=12) ✓
         // HALT (byte 84):
         Imem[21] = 32'h0000006F; // jal   x0, 0         ; HALT
+*/
 
         // ============================================================
         // PART 8 : INSERTION SORT  (ascending, handles signed negatives)
@@ -310,6 +313,7 @@ module Instruction_Memory
         //
         //   Testbench PART 8: check mem[0..4] == {-5,-3,-1,8,12}
         // ============================================================
+
         /*
         Imem[0]  = 32'h00100293; // addi  x5, x0, 1     ; i=1
         Imem[1]  = 32'h00500513; // addi  x10,x0, 5     ; N=5
@@ -338,7 +342,9 @@ module Instruction_Memory
         Imem[19] = 32'h0000006F; // jal   x0, 0         ; HALT
         */
 
+
     end
+
 
     // ============================================================
     // ASYNCHRONOUS (COMBINATIONAL) READ  –  kept from previous fix

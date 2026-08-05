@@ -10,7 +10,7 @@
 `include "Imm_Gen.v"
 `include "Instruction_Decoder.v"
 `include "Instruction_Memory.v"
-`include "MainDSecoder.v"
+`include "MainDecoder.v"
 `include "PC.v"
 `include "PC_Mux.v"
 `include "PC_Plus_4.v"
@@ -135,7 +135,7 @@ module CPU_top_tb;
     //   Tests: add, sub, and, or, xor, slt, sltu, srai, slli with negatives
     //   Expected: x3=-5  x9=1  x12=-5  x13=120  x17=1
     // ============================================================
-    /*
+/*    
     initial begin
         $dumpfile("cpu_top.vcd"); $dumpvars(0, CPU_top_tb);
         MONITOR_ON = 1;
@@ -172,7 +172,7 @@ module CPU_top_tb;
     //   Instruction_Memory PART 2 must be active.
     //   Array at byte 80: {10,25,7,40,15}  sum=97 → x10
     // ============================================================
-    /*
+/*    
     initial begin
         $dumpfile("cpu_top.vcd"); $dumpvars(0, CPU_top_tb);
         MONITOR_ON = 1;  // watch loop iterations
@@ -198,6 +198,7 @@ module CPU_top_tb;
     //   Instruction_Memory PART 3 must be active.
     //   Array at byte 40: {-5,12,-3,8,-1,20,-7,4}  → count=4 → x10
     // ============================================================
+    
     /*
     initial begin
         $dumpfile("cpu_top.vcd"); $dumpvars(0, CPU_top_tb);
@@ -224,6 +225,7 @@ module CPU_top_tb;
     //   Uses shift-and-add multiply (no MUL instruction in RV32I base)
     //   Result in x10 = 120
     // ============================================================
+    
     /*
     initial begin
         $dumpfile("cpu_top.vcd"); $dumpvars(0, CPU_top_tb);
@@ -249,6 +251,7 @@ module CPU_top_tb;
     //   Instruction_Memory PART 5 must be active.
     //   Euclidean algorithm; result in x10 = 6
     // ============================================================
+    
     /*
     initial begin
         $dumpfile("cpu_top.vcd"); $dumpvars(0, CPU_top_tb);
@@ -292,7 +295,7 @@ module CPU_top_tb;
     //     F(47) = 2,971,215,073  in x24  (copied at exit)
     //   Testbench PART 6: check x24 == 2971215073
     // ============================================================
-    /*
+/*
 integer fib_iter;
     reg [31:0] last_x24;
     reg [31:0] latch_PC, latch_instr;
@@ -326,31 +329,32 @@ integer fib_iter;
         $dumpfile("cpu_top.vcd"); $dumpvars(0, CPU_top_tb);
         MONITOR_ON = 0;
 
-        $display("\n╔══════════════════════════════════════════════════════════════════════════════════════════╗");
+        $display("\n╔═══════════════════════════════════════════════════════════════════════════════════════╗");
         $display(  "║        PART 6 : FIBONACCI  (full 32-bit unsigned, loop stops on overflow)             ║");
-        $display(  "╠════════╦═══════╦════════════╦════════════╦══════════════╦══════════════╦════════════╣");
-        $display(  "║  Iter  ║ Cycle ║     PC     ║   Instr    ║  x22 F(n-1)  ║  x23  F(n)   ║ x24 F(n+1) ║");
-        $display(  "╠════════╬═══════╬════════════╬════════════╬══════════════╬══════════════╬════════════╣");
+        $display(  "╠════════╦═══════╦════════════╦════════════╦══════════════╦═════════════==═╦════════════╣");
+        $display(  "║  Iter  ║ Cycle ║     PC     ║   Instr    ║  x22 F(n-1)  ║  x23  F(n)   ║ x24 F(n+1)   ║");
+        $display(  "╠════════╬═══════╬════════════╬════════════╬══════════════╬══════════════╬════════════==╣");
 
         rst = 1; #20; rst = 0;
         #4000;
 
-        $display(  "╠════════╩═══════╩════════════╩════════════╩══════════════╩══════════════╩════════════╣");
-        $display(  "║  x22 = %10d  (F46, expect 1836311903)                                      ║", $unsigned(dut.core.rf.regfile[22]));
-        $display(  "║  x23 = %10d  (F47, expect 2971215073)                                      ║", $unsigned(dut.core.rf.regfile[23]));
-        $display(  "║  x24 = %10d  (result,  expect 2971215073)                                  ║", $unsigned(x24));
-        $display(  "║  F48 = 4807526976 overflows uint32, loop stopped                                    ║");
-        $display(  "║  Total cycles : %0d                                                              ║", cycle_count);
-        $display(  "╠══════════════════════════════════════════════════════════════════════════════════════╣");
+        $display(  "╠════════╩═══════╩════════════╩════════════╩══════════════╩══════════════╩═════════==═══╣");
+        $display(  "║  x22 = %10d  (F46, expect 1836311903)                                           ║", $unsigned(dut.core.rf.regfile[22]));
+        $display(  "║  x23 = %10d  (F47, expect 2971215073)                                           ║", $unsigned(dut.core.rf.regfile[23]));
+        $display(  "║  x24 = %10d  (result,  expect 2971215073)                                       ║", $unsigned(x24));
+        $display(  "║  F48 = 4807526976 overflows uint32, loop stopped                                      ║");
+        $display(  "║  Total cycles : %0d                                                                   ║", cycle_count);
+        $display(  "╠══════════════════════════════════════════════════════════════════════════════════════=╣");
         if (x24 == 32'd2971215073)
-            $display("║  >>>  PASS : Largest 32-bit Fibonacci = 2971215073 (F47)  <<<                       ║");
+            $display("║  >>>  PASS : Largest 32-bit Fibonacci = 2971215073 (F47)  <<<                         ║");
         else
-            $display("║  >>>  FAIL : got %0d (expect 2971215073)  <<<                                ║", $unsigned(x24));
-        $display(  "╚══════════════════════════════════════════════════════════════════════════════════════╝\n");
+            $display("║  >>>  FAIL : got %0d (expect 2971215073)  <<<                                 ║", $unsigned(x24));
+        $display(  "╚══════════════════════════════════════════════════════════════════════════════════════=╝\n");
         $finish;
     end
+   */ 
 
-    */
+    /*
     // ============================================================
     // PART 7 : BUBBLE SORT  (signed array)  [ACTIVE]
     //   Instruction_Memory PART 7 must be active.
@@ -395,6 +399,7 @@ integer fib_iter;
         $finish;
     end
 
+*/
 
     // ============================================================
     // PART 8 : INSERTION SORT  (signed array)
@@ -403,7 +408,8 @@ integer fib_iter;
     //   Output mem[0..4] = {-5, -3, -1, 8, 12}
     //   Faster than bubble sort (~81 cycles vs ~111)
     // ============================================================
-    /*
+
+/*    
     initial begin
         $dumpfile("cpu_top.vcd"); $dumpvars(0, CPU_top_tb);
         MONITOR_ON = 1;
@@ -436,6 +442,7 @@ integer fib_iter;
         $display("================================================\n");
         $finish;
     end
-    */
+    
+*/
 
 endmodule

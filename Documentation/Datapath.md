@@ -1,7 +1,7 @@
 # `Datapath.v` — Decode / Execute / Memory / Writeback Core Datapath
 
 ## Overview
-`ID_EX_MEM_WB_top` is the **second major top-level block** of the single-cycle CPU (paired with `IF_top.v`, the fetch stage). It wires together everything downstream of instruction fetch: **decoding** the instruction and reading registers, **executing** on the ALU, accessing **data memory**, and selecting the **writeback** value — all within a single clock cycle, since this is a single-cycle (not pipelined) design despite the "ID/EX/MEM/WB" naming (the name reflects the classic RISC *stages of work*, not actual pipeline registers).
+`Datapath.v` is the **second major top-level block** of the single-cycle CPU (paired with `IF_top.v`, the fetch stage). It wires together everything downstream of instruction fetch: **decoding** the instruction and reading registers, **executing** on the ALU, accessing **data memory**, and selecting the **writeback** value — all within a single clock cycle, since this is a single-cycle (not pipelined) design despite the "ID/EX/MEM/WB" naming (the name reflects the classic RISC *stages of work*, not actual pipeline registers).
 
 This module also exposes several signals back to `CPU_top.v` that are needed purely for **next-PC selection** — `Branch_out`/`zero_out` (conditional branch outcome), and `jump_jal`/`jump_jalr`/`jalr_target` (unconditional jump target selection).
 

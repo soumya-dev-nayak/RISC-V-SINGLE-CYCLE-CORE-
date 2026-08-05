@@ -26,14 +26,9 @@ wire [N-1:0] jalr_target;
 //----------------------------------------------------------
 // Core Datapath (ID + EX + MEM + WB)
 //----------------------------------------------------------
-<<<<<<< HEAD
-ID_EX_MEM_WB_top core (
+Datapath core (
     .clk(clk),
     .rst(rst),
-=======
-Datapath core (
-    .clk(clk),          .rst(rst),
->>>>>>> 3c5a1e1 (Refactor single-cycle RISC-V datapath and update CPU modules)
     .instr(instr),
     .PC(PC),            // PC fed in for AUIPC and PC+4 link
     .ALU_result(ALU_result),
