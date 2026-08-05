@@ -214,3 +214,65 @@ VCD info: dumpfile cpu_top.vcd opened for output.
   <em>Figure: PART 2 – Array Sum Using a Loop</em><br>
   <em>Simulation results verifying array traversal, accumulation, loop control using <code>jal</code>, and the final sum of 97 stored in register <code>x10</code>.</em>
 </p>
+
+## Part 3: Count Negative Numbers in an Array
+
+### Description
+
+This program traverses an array stored in Data Memory and counts the number of negative elements. The final count is accumulated in register `x10` using a loop controlled by the `jal` instruction.
+
+### Array Contents
+
+| Index | Value |
+|------:|------:|
+| 0 | -5 |
+| 1 | 12 |
+| 2 | -3 |
+| 3 | 8 |
+| 4 | -1 |
+| 5 | 20 |
+| 6 | -7 |
+| 7 | 4 |
+
+### Expected Results
+
+| Register | Description | Expected Value |
+|----------|-------------|---------------:|
+| `x10` | Number of negative elements | `4` |
+| `x11` | Loop counter (`i`) | `8` |
+
+### Simulation Output
+
+```text
+VCD info: dumpfile cpu_top.vcd opened for output.
+
+[cyc   3] PC=0x00000000  instr=0x02800293  x5=0 x6=0 x8=0 x10=0
+[cyc   4] PC=0x00000004  instr=0x00800313  x5=40 x6=0 x8=0 x10=0
+...
+[cyc  60] PC=0x0000002c  instr=0x0000006f  x5=72 x6=8 x8=0 x10=4
+...
+[cyc  82] PC=0x0000002c  instr=0x0000006f  x5=72 x6=8 x8=0 x10=4
+```
+
+### Verification Results
+
+```text
+================================================
+  PART 3 : COUNT NEGATIVES IN ARRAY
+  Array = {-5,12,-3,8,-1,20,-7,4}
+================================================
+  x10 = 4  (count, expect 4)
+  x11 = 8  (i,     expect 8)
+------------------------------------------------
+  >>> PASS: count = 4 <<<
+================================================
+```
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-3%20COUNT%20NEGATIVES.png" width="1100">
+</p>
+
+<p align="center">
+  <em>Figure: PART 3 – Count Negative Numbers in an Array</em><br>
+  <em>Simulation results verifying array traversal, signed comparison, loop execution, and the correct count of negative elements (<code>x10 = 4</code>).</em>
+</p>
