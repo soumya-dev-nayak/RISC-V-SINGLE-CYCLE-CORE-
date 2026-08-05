@@ -1,5 +1,15 @@
 # `Instruction_Memory.v` — Instruction Memory (Program ROM)
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-3%20Fetch%20instruction%20from%20memory.png" width="1100">
+</p>
+
+<p align="center">
+  <em>Figure: Instruction Fetch from Memory</em><br>
+  <em>Instruction Fetch (IF) stage showing program counter access and instruction memory read operation</em>
+</p>
+
+
 ## Overview
 The **Instruction Memory** module models the program storage of the single-cycle RISC-V core. It is a simple asynchronous (combinational-read) ROM-like array that holds a hand-assembled RV32I machine-code program and returns the instruction word at the requested address every cycle, with no clock delay.
 
