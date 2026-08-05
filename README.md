@@ -11,6 +11,13 @@
   <em>Complete datapath and control architecture of the multicycle RISC-V processor</em>
 </p>
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-29%20Multicycle%20Control%20Unit.png" width="550">
+</p>
+
+<p align="center">
+  <em>Figure: Multicycle Control Unit</em><br>
+</p>
 ---
 
 ## 📖 How to Read This Repository
