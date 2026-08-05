@@ -1,5 +1,14 @@
 # PC Target (PC_Target)
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-7%20Compute%20memory%20address.png" width="1100">
+</p>
+
+<p align="center">
+  <em>Figure: Compute Memory Address</em><br>
+  <em>Address calculation stage where the ALU computes the effective memory address for load and store instructions</em>
+</p>
+
 ## Overview
 The **PC_Target** module computes a PC-relative branch/jump target address by adding the current Program Counter value to a decoded immediate offset. This is used for **conditional branches** (`BEQ`, `BNE`, `BLT`, etc.) and **`JAL`**, both of which specify their destination as an offset relative to the address of the branching/jumping instruction itself — a defining characteristic of RISC-V's PC-relative control-flow addressing.
 
