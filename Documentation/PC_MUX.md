@@ -7,14 +7,6 @@ This module is **purely combinational**.
 
 ---
 
-## Revision History (per source comments)
-
-### Author / Change
-**Prakhar** — upgraded design.
-
-### What Changed
-- Expanded from a **2:1 mux** (single `branch` select bit) to a **3:1 mux** (2-bit `pc_sel` select) to properly support `JAL`, `JALR`, and conditional branches as distinct control-flow paths.
-
 ### The Bug Being Fixed
 ```verilog
 // OLD (2:1) code:
