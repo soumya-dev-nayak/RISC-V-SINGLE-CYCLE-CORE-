@@ -3,12 +3,12 @@
 > A from-scratch, fully documented **single-cycle RV32I processor core** written in Verilog — complete with a working ALU, control unit, PC subsystem, register file, instruction/data memory, an 8-program test suite (ALU ops, array sum, counting, factorial, GCD, Fibonacci, bubble sort, insertion sort), a simulation testbench, and a live FPGA demo (Basys-3, 7-segment display).
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-28%20Complete%20Multucycle%20Processor.png" width="1100">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-13%20Complete%20single-cycle%20processor.png" width="1250">
 </p>
 
 <p align="center">
-  <em>Figure: Complete Multicycle Processor</em><br>
-  <em>Complete datapath and control architecture of the multicycle RISC-V processor</em>
+  <em>Figure: Complete Single-Cycle Processor</em><br>
+  <em>Complete datapath and control architecture of the single-cycle RISC-V processor</em>
 </p>
 
 <p align="center">
@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <em>Figure: Multicycle Control Unit</em><br>
+  <em>Figure: Control Unit</em><br>
 </p>
 
 ---
