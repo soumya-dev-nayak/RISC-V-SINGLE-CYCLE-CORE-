@@ -37,3 +37,180 @@ Each test case is organized in its own directory with all the necessary files, m
 | `5..9` | `20..36` | `{10, 25, 7, 40, 15}` | Positive array |
 | `10..17` | `40..68` | 8-element mixed array | Count negatives |
 | `20..24` | `80..96` | `{10, 25, 7, 40, 15}` | Array sum |
+
+## Part 1: ALU Test with Negative Numbers
+
+### Description
+
+This program verifies the functionality of the RISC-V ALU using both positive and negative operands. It tests arithmetic, logical, comparison, and shift instructions.
+
+### Expected Results
+
+| Register | Operation | Expected Value |
+|----------|-----------|---------------:|
+| `x3` | `add(x1, x2)` | `-5` |
+| `x4` | `sub(x2, x1)` | `35` |
+| `x5` | `sub(x1, x2)` | `-35` |
+| `x6` | `and(x1, x2)` | `12` |
+| `x7` | `or(x1, x2)` | `-17` |
+| `x8` | `xor(x1, x2)` | `-29` |
+| `x9` | `slt(x1, x2)` | `1` |
+| `x10` | `slt(x2, x1)` | `0` |
+| `x11` | `sltu(x1, x2)` | `0` |
+| `x12` | `srai(x1, 2)` | `-5` |
+| `x13` | `slli(x2, 3)` | `120` |
+| `x16` | `add(x14, x15)` | `-63` |
+| `x17` | `slt(x14, x16)` | `1` |
+
+### Testbench Verification
+
+- `x3 == -5`
+- `x9 == 1`
+- `x12 == -5`
+- `x13 == 120`
+- `x17 == 1`
+
+### Instruction Memory Program
+
+```verilog
+Imem[0]  = 32'hFEC00093; // addi  x1, x0, -20
+Imem[1]  = 32'h00F00113; // addi  x2, x0,  15
+Imem[2]  = 32'h002081B3; // add   x3, x1,  x2    ; -5
+Imem[3]  = 32'h40110233; // sub   x4, x2,  x1    ; 35
+Imem[4]  = 32'h402082B3; // sub   x5, x1,  x2    ; -35
+Imem[5]  = 32'h0020F333; // and   x6, x1,  x2    ; 12
+Imem[6]  = 32'h0020E3B3; // or    x7, x1,  x2    ; -17
+Imem[7]  = 32'h0020C433; // xor   x8, x1,  x2    ; -29
+Imem[8]  = 32'h0020A4B3; // slt   x9, x1,  x2    ; 1
+Imem[9]  = 32'h00112533; // slt   x10,x2,  x1    ; 0
+Imem[10] = 32'h0020B5B3; // sltu  x11,x1,  x2    ; 0
+Imem[11] = 32'h4020D613; // srai  x12,x1,  2     ; -5
+Imem[12] = 32'h00311693; // slli  x13,x2,  3     ; 120
+Imem[13] = 32'hF9C00713; // addi  x14,x0, -100
+Imem[14] = 32'h02500793; // addi  x15,x0,  37
+Imem[15] = 32'h00F70833; // add   x16,x14, x15   ; -63
+Imem[16] = 32'h010728B3; // slt   x17,x14, x16   ; 1
+Imem[17] = 32'h0000006F; // jal   x0, 0          ; HALT
+```
+### Simulation Output
+
+```text
+[cyc   3] PC=0x00000000  instr=0xfec00093  x5=0 x6=0 x8=0 x10=0
+[cyc   4] PC=0x00000004  instr=0x00f00113  x5=0 x6=0 x8=0 x10=0
+[cyc   5] PC=0x00000008  instr=0x002081b3  x5=0 x6=0 x8=0 x10=0
+[cyc   6] PC=0x0000000c  instr=0x40110233  x5=0 x6=0 x8=0 x10=0
+[cyc   7] PC=0x00000010  instr=0x402082b3  x5=0 x6=0 x8=0 x10=0
+[cyc   8] PC=0x00000014  instr=0x0020f333  x5=-35 x6=0 x8=0 x10=0
+[cyc   9] PC=0x00000018  instr=0x0020e3b3  x5=-35 x6=12 x8=0 x10=0
+[cyc  10] PC=0x0000001c  instr=0x0020c433  x5=-35 x6=12 x8=0 x10=0
+[cyc  11] PC=0x00000020  instr=0x0020a4b3  x5=-35 x6=12 x8=-29 x10=0
+[cyc  12] PC=0x00000024  instr=0x00112533  x5=-35 x6=12 x8=-29 x10=0
+[cyc  13] PC=0x00000028  instr=0x0020b5b3  x5=-35 x6=12 x8=-29 x10=0
+[cyc  14] PC=0x0000002c  instr=0x4020d613  x5=-35 x6=12 x8=-29 x10=0
+[cyc  15] PC=0x00000030  instr=0x00311693  x5=-35 x6=12 x8=-29 x10=0
+[cyc  16] PC=0x00000034  instr=0xf9c00713  x5=-35 x6=12 x8=-29 x10=0
+[cyc  17] PC=0x00000038  instr=0x02500793  x5=-35 x6=12 x8=-29 x10=0
+[cyc  18] PC=0x0000003c  instr=0x00f70833  x5=-35 x6=12 x8=-29 x10=0
+[cyc  19] PC=0x00000040  instr=0x010728b3  x5=-35 x6=12 x8=-29 x10=0
+[cyc  20] PC=0x00000044  instr=0x0000006f  x5=-35 x6=12 x8=-29 x10=0
+[cyc  21] PC=0x00000044  instr=0x0000006f  x5=-35 x6=12 x8=-29 x10=0
+[cyc  22] PC=0x00000044  instr=0x0000006f  x5=-35 x6=12 x8=-29 x10=0
+[cyc  23] PC=0x00000044  instr=0x0000006f  x5=-35 x6=12 x8=-29 x10=0
+[cyc  24] PC=0x00000044  instr=0x0000006f  x5=-35 x6=12 x8=-29 x10=0
+[cyc  25] PC=0x00000044  instr=0x0000006f  x5=-35 x6=12 x8=-29 x10=0
+[cyc  26] PC=0x00000044  instr=0x0000006f  x5=-35 x6=12 x8=-29 x10=0
+[cyc  27] PC=0x00000044  instr=0x0000006f  x5=-35 x6=12 x8=-29 x10=0
+```
+
+### Verification Results
+
+```text
+================================================
+  PART 1 : ALU + NEGATIVE NUMBERS TEST
+  x1=-20, x2=15
+================================================
+  x3  =   -5  (expect    -5) [add  x1+x2]
+  x4  =   35  (expect    35) [sub  x2-x1]
+  x5  =  -35  (expect   -35) [sub  x1-x2]
+  x6  =   12  (expect    12) [and  x1&x2]
+  x7  =  -17  (expect   -17) [or   x1|x2]
+  x8  =  -29  (expect   -29) [xor  x1^x2]
+  x9  =    1  (expect     1) [slt  x1<x2]
+  x10 =    0  (expect     0) [slt  x2<x1]
+  x11 =    0  (expect     0) [sltu x1<x2 unsigned]
+  x12 =   -5  (expect    -5) [srai x1>>2]
+  x13 =  120  (expect   120) [slli x2<<3]
+  x16 =  -63  (expect   -63) [add  -100+37]
+  x17 =    1  (expect     1) [slt  -100<-63]
+------------------------------------------------
+  >>> PASS <<<
+================================================
+```
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-1%20ALU%20Operations%20op.png" width="1200">
+</p>
+
+<p align="center">
+  <em>Figure: PART 1 – ALU Operations Test Output</em><br>
+  <em>Simulation results verifying arithmetic, logical, comparison, and shift operations using positive and negative operands.</em>
+</p>
+
+## Part 2: Array Sum Using a Loop
+
+### Description
+
+This program computes the sum of an array stored in Data Memory using a loop implemented with the `jal` instruction. The processor iterates through all array elements, accumulates the sum, and stores the final result in register `x10`.
+
+### Array Contents
+
+| Index | Value |
+|------:|------:|
+| 0 | 10 |
+| 1 | 25 |
+| 2 | 7 |
+| 3 | 40 |
+| 4 | 15 |
+
+### Expected Results
+
+| Register | Description | Expected Value |
+|----------|-------------|---------------:|
+| `x10` | Sum of all array elements | `97` |
+| `x11` | Loop counter (`i`) | `5` |
+| `x6` | Number of elements (`N`) | `5` |
+
+### Simulation Output
+
+```text
+VCD info: dumpfile cpu_top.vcd opened for output.
+
+[cyc   3] PC=0x00000000  instr=0x05000293  x5=0 x6=0 x8=0 x10=0
+[cyc   4] PC=0x00000004  instr=0x00500313  x5=80 x6=0 x8=0 x10=0
+...
+[cyc  38] PC=0x00000028  instr=0x0000006f  x5=100 x6=5 x8=0 x10=97
+...
+[cyc  62] PC=0x00000028  instr=0x0000006f  x5=100 x6=5 x8=0 x10=97
+```
+
+### Verification Results
+
+```text
+================================================
+  PART 2 : ARRAY SUM  (loop using JAL)
+  Array = {10, 25, 7, 40, 15}
+================================================
+  x10 = 97  (sum, expect 97)
+  x11 = 5   (i,   expect  5)
+  x6  = 5   (N,   expect  5)
+------------------------------------------------
+  >>> PASS: sum = 97 <<<
+================================================
+```
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-2%20Array%20Sum.png" width="1300">
+</p>
+
+<p align="center">
+  <em>Figure: PART 2 – Array Sum Using a Loop</em><br>
+  <em>Simulation results verifying array traversal, accumulation, loop control using <code>jal</code>, and the final sum of 97 stored in register <code>x10</code>.</em>
+</p>
