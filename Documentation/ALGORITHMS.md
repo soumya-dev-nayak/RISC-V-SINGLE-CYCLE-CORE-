@@ -422,21 +422,21 @@ HALT
 Unlike a simple time-stamped `$monitor`, the real `CPU_top_tb.v` uses a **change-triggered table logger**: it watches `x24` and, only on the cycles where it actually changes value, prints one formatted row — carrying the iteration number, the cycle count, the (one-cycle-delayed) `PC` and instruction word, and the full `x22`/`x23`/`x24` sliding window. This keeps the log to exactly the ~46 meaningful updates instead of ~400+ redundant per-cycle lines. The real output looks like:
 
 ```
-╔══════════════════════════════════════════════════════════════════════════════════════════╗
-║        PART 6 : FIBONACCI  (full 32-bit unsigned, loop stops on overflow)             ║
+╔═════════════════════════════════════════════════════════════════════════════════════╗
+║        PART 6 : FIBONACCI  (full 32-bit unsigned, loop stops on overflow)           ║
 ╠════════╦═══════╦════════════╦════════════╦══════════════╦══════════════╦════════════╣
 ║  Iter  ║ Cycle ║     PC     ║   Instr    ║  x22 F(n-1)  ║  x23  F(n)   ║ x24 F(n+1) ║
 ╠════════╬═══════╬════════════╬════════════╬══════════════╬══════════════╬════════════╣
-║     1  ║   ... ║ 0x00000008 ║ 0x017B0C33 ║            0 ║            1 ║           1 ║
-║     2  ║   ... ║ 0x00000008 ║ 0x017B0C33 ║            1 ║            1 ║           2 ║
+║     1  ║   ... ║ 0x00000008 ║ 0x017B0C33 ║            0 ║            1 ║           1║
+║     2  ║   ... ║ 0x00000008 ║ 0x017B0C33 ║            1 ║            1 ║           2║
 ...
-║    46  ║   ... ║ 0x00000008 ║ 0x017B0C33 ║   1836311903 ║   2971215073 ║  2971215073 ║
+║    46  ║   ... ║ 0x00000008 ║ 0x017B0C33 ║   1836311903 ║   2971215073 ║  2971215073║
 ╠════════╩═══════╩════════════╩════════════╩══════════════╩══════════════╩════════════╣
-║  x22 = 1836311903  (F46, expect 1836311903)                                          ║
-║  x23 = 2971215073  (F47, expect 2971215073)                                          ║
-║  x24 = 2971215073  (result,  expect 2971215073)                                      ║
-║  F48 = 4807526976 overflows uint32, loop stopped                                     ║
-╚══════════════════════════════════════════════════════════════════════════════════════╝
+║  x22 = 1836311903  (F46, expect 1836311903)                                         ║
+║  x23 = 2971215073  (F47, expect 2971215073)                                         ║
+║  x24 = 2971215073  (result,  expect 2971215073)                                     ║
+║  F48 = 4807526976 overflows uint32, loop stopped                                    ║
+╚═════════════════════════════════════════════════════════════════════════════════════╝
 ```
 
 ## Result Summary
