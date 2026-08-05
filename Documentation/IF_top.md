@@ -1,5 +1,14 @@
 # `IF_top.v` — Instruction Fetch (IF) Stage Wrapper
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-5%20Fetch%20instruction%20from%20memory%20%26%20Read%20source%20operand%20from%20register%20file.png" width="1100">
+</p>
+
+<p align="center">
+  <em>Figure: Instruction Fetch and Register Read</em><br>
+  <em>Combined Instruction Fetch (IF) and Register Fetch (RF) stages showing instruction retrieval and source operand read operations</em>
+</p>
+
 ## Overview
 `IF_top` is the **top-level Instruction Fetch stage** wrapper for the single-cycle RISC-V core. It composes the **program counter logic** (`PC_Top.v`) and the **instruction memory** (`Instruction_Memory.v`) into a single fetch-stage block, presenting a clean interface to the rest of the CPU: given the current PC-selection control and any needed branch/jump offsets, it produces the current `PC` and the instruction fetched at that address.
 
