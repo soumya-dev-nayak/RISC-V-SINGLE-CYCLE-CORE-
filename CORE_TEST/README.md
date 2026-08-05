@@ -13,3 +13,5 @@ The purpose of this section is to provide a structured verification flow for eac
 - **Documentation** – Brief explanation of each test case, expected functionality, and observed results.
 
 Each test case is organized in its own directory with all the necessary files, making it easy to reproduce the simulation results.
+
+#### This section demonstrates the implementation and verification of various RISC-V programs through their corresponding hardware modules.
