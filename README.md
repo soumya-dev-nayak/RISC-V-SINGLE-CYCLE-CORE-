@@ -18,6 +18,7 @@
 <p align="center">
   <em>Figure: Multicycle Control Unit</em><br>
 </p>
+
 ---
 
 ## 📖 How to Read This Repository
