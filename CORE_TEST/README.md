@@ -317,77 +317,19 @@ VCD info: dumpfile cpu_top.vcd opened for output.
 ================================================
 ```
 <p align="center">
-  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-4%20FACTORIAL%20op1.png" width="1350">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-4%20Factorial%20op1.png" width="1350">
 </p>
 
 <p align="center">
   <em>Figure: PART 4 – Factorial Computation</em><br>
-  <em>Simulation results verifying iterative factorial computation using nested loops, conditional branches, <code>jal</code>-based control flow, and repeated addition for multiplication.</em>
+  <em>Simulation results showing the execution of the factorial algorithm using nested loops, conditional branches, arithmetic operations, and <code>jal</code>-based control flow. The processor correctly computes <code>5! = 120</code> and stores the result in <code>x10</code>.</em>
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-4%20FACTORIAL%20op2.png" width="1350">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-4%20Factorial%20op2.png" width="1350">
 </p>
 
 <p align="center">
   <em>Figure: PART 4 – Factorial Computation</em><br>
-  <em>Simulation results confirming correct execution of the factorial algorithm and successful computation of <code>5! = 120</code>, with the final result stored in <code>x10</code>.</em>
-</p>
-
-## Part 5: Greatest Common Divisor (GCD) Using Euclidean Algorithm
-
-### Description
-
-This program computes the **Greatest Common Divisor (GCD)** of two positive integers using the **Euclidean subtraction algorithm**. The algorithm repeatedly subtracts the smaller value from the larger until both values become equal. The final GCD is stored in register `x10`.
-
-### Input Values
-
-| Register | Value |
-|---------:|------:|
-| `x5` (`a`) | `48` |
-| `x6` (`b`) | `18` |
-
-### Expected Results
-
-| Register | Description | Expected Value |
-|----------|-------------|---------------:|
-| `x5` | Final value of `a` | `6` |
-| `x6` | Final value of `b` | `6` |
-| `x10` | GCD Result | `6` |
-
-### Simulation Output
-
-```text
-VCD info: dumpfile cpu_top.vcd opened for output.
-
-[cyc   3] PC=0x00000000  instr=0x03000293  x5=0  x6=0  x8=0 x10=0
-[cyc   4] PC=0x00000004  instr=0x01200313  x5=48 x6=0  x8=0 x10=0
-...
-[cyc  33] PC=0x00000020  instr=0x00028513  x5=6  x6=6  x8=0 x10=0
-[cyc  34] PC=0x00000024  instr=0x0000006f  x5=6  x6=6  x8=0 x10=6
-...
-[cyc  62] PC=0x00000024  instr=0x0000006f  x5=6  x6=6  x8=0 x10=6
-```
-
-### Verification Results
-
-```text
-================================================
-  PART 5 : GCD(48, 18) = 6  [Euclidean]
-================================================
-  x5  = 6  (a at halt, expect 6)
-  x6  = 6  (b at halt, expect 6)
-  x10 = 6  (result,    expect 6)
-------------------------------------------------
-  >>> PASS: GCD = 6 <<<
-================================================
-```
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-5%20GCD.png" width="1350">
-</p>
-
-<p align="center">
-  <em>Figure: PART 5 – Greatest Common Divisor (GCD) Using Euclidean Algorithm</em><br>
-  <em>Simulation results verifying the iterative Euclidean subtraction algorithm, conditional branching, <code>jal</code>-based looping, and correct computation of the greatest common divisor (<code>x10 = 6</code>).</em>
+  <em>Final simulation output confirming successful completion of the factorial program. Register values verify the expected result (<code>x10 = 120</code>), demonstrating correct implementation of iterative multiplication, loop execution, and program termination.</em>
 </p>
