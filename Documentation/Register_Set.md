@@ -68,6 +68,16 @@ module Register_Set
 ## Behavioral Logic
 
 ### Write Port (Synchronous, with Asynchronous Reset)
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-8%20Read%20memory%20and%20write%20result%20back%20to%20register%20file.png" width="1100">
+</p>
+
+<p align="center">
+  <em>Figure: Memory Read and Write-Back</em><br>
+  <em>Memory access and write-back stages showing data read from memory and written back to the destination register</em>
+</p>
+
 ```verilog
 always @(posedge clk or posedge rst) begin
     if (rst) begin
