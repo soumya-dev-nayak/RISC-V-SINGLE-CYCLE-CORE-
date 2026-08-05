@@ -1,5 +1,23 @@
 # Register File (Register_Set)
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-4%20Read%20source%20operand%20from%20register%20file.png" width="1100">
+</p>
+
+<p align="center">
+  <em>Figure: Read Source Operands from Register File</em><br>
+  <em>Register Fetch (RF) stage illustrating source operand read operation from the register file</em>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/RegisterFile.png" width="200">
+</p>
+
+<p align="center">
+  <em>Figure: Register File Architecture</em><br>
+  <em>32 × 32-bit register file with dual read ports and a single write port for the RISC-V processor</em>
+</p>
+
 ## Overview
 The **Register_Set** module implements the RISC-V general-purpose register file — a bank of 32 registers, each 32 bits wide (`x0`–`x31`), that serves as the primary fast-access storage for operand data throughout the datapath. It supports simultaneous **dual-read** (for `rs1` and `rs2`) and **single-write** (for `rd`) access within the same cycle, which is essential for a single-cycle datapath where an instruction's source operands must be read and (potentially) a prior instruction's result written back, all inside one clock period.
 
