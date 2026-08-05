@@ -137,9 +137,22 @@ The logic that looks at a raw 32-bit instruction word and figures out *what it m
 ### Chapter 2 — Storage Elements
 Where the CPU keeps its state: registers, program instructions, and data.
 
-> 🖼️ **[INSERT IMAGE HERE — Register File (32×32-bit) Block Diagram]**
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/RegisterFile.png" width="250">
+</p>
 
-> 🖼️ **[INSERT IMAGE HERE — Instruction Memory & Data Memory Layout Diagram]**
+<p align="center">
+  <em>Figure: Register File Architecture</em><br>
+  <em>32 × 32-bit register file with dual read ports and a single write port for the RISC-V processor</em>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-1%20State%20elements%20of%20a%20RISC-V%20processor.png" width="1100">
+</p>
+
+<p align="center">
+  <em>Primary state elements of the RISC-V processor, including the Program Counter (PC), Register File, and Data Memory</em>
+</p>
 
 | Chapter | File | What it covers |
 |---|---|---|
