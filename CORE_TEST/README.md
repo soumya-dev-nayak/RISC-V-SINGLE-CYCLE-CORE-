@@ -276,3 +276,60 @@ VCD info: dumpfile cpu_top.vcd opened for output.
   <em>Figure: PART 3 – Count Negative Numbers in an Array</em><br>
   <em>Simulation results verifying array traversal, signed comparison, loop execution, and the correct count of negative elements (<code>x10 = 4</code>).</em>
 </p>
+
+## Part 4: Factorial Using a Loop
+
+### Description
+
+This program computes the factorial of `5` using iterative multiplication. A loop controlled by the `jal` instruction repeatedly multiplies the accumulated result until the counter exceeds the input value. The final factorial is stored in register `x10`.
+
+### Expected Results
+
+| Register | Description | Expected Value |
+|----------|-------------|---------------:|
+| `x10` | Factorial of `5` | `120` |
+| `x6` | Loop Counter | `6` |
+
+### Simulation Output
+
+```text
+VCD info: dumpfile cpu_top.vcd opened for output.
+
+[cyc   3] PC=0x00000000  instr=0x00100513  x5=0 x6=0 x8=0 x10=0
+[cyc   4] PC=0x00000004  instr=0x00200313  x5=0 x6=0 x8=0 x10=1
+...
+[cyc 103] PC=0x00000040  instr=0xfcdff06f  x5=0 x6=6 x8=0 x10=120
+...
+[cyc 152] PC=0x00000044  instr=0x0000006f  x5=0 x6=6 x8=0 x10=120
+```
+
+### Verification Results
+
+```text
+================================================
+  PART 4 : FACTORIAL
+  Input = 5
+================================================
+  x10 = 120  (expect 120)
+  x6  =   6  (loop counter)
+------------------------------------------------
+  >>> PASS: 5! = 120 <<<
+================================================
+```
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-4%20FIBONACCI%20op1.png" width="1350">
+</p>
+
+<p align="center">
+  <em>Figure: PART 4 – Fibonacci Sequence Generation</em><br>
+  <em>Simulation results verifying iterative Fibonacci sequence generation using nested loops, conditional branches, <code>jal</code> instructions, and correct computation of the final Fibonacci value (<code>x10 = 120</code>).</em>
+</p>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-4%20FIBONACCI%20op2.png" width="1350">
+</p>
+
+<p align="center">
+  <em>Figure: PART 4 – Fibonacci Sequence Generation</em><br>
+  <em>Simulation results confirming correct execution of the Fibonacci algorithm, including loop iterations, conditional branching, <code>jal</code>-based control flow, and successful verification of the computed Fibonacci number.</em>
+</p>
+
