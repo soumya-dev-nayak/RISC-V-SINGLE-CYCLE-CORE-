@@ -173,7 +173,14 @@ Where the actual computing happens.
 ### Chapter 4 — Program Counter Subsystem
 How the CPU decides which instruction to fetch next — sequential, branch/JAL, or JALR.
 
-> 🖼️ **[INSERT IMAGE HERE — PC Subsystem / Next-PC Selection Diagram]**
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-9%20Increment%20program%20counter.png" width="1100">
+</p>
+
+<p align="center">
+  <em>Figure: Increment Program Counter</em><br>
+  <em>Program Counter (PC) update stage showing the generation of the next sequential instruction address (PC + 4)</em>
+</p>
 
 | Chapter | File | What it covers |
 |---|---|---|
@@ -185,8 +192,6 @@ How the CPU decides which instruction to fetch next — sequential, branch/JAL, 
 
 ### Chapter 5 — Stage Integration
 Where the individual pieces above get wired into full pipeline **stages** (still single-cycle — no pipeline registers, just logical grouping).
-
-> 🖼️ **[INSERT IMAGE HERE — Full Datapath Diagram: IF → ID → EX → MEM → WB, all buses labeled]**
 
 | Chapter | File | What it covers |
 |---|---|---|
