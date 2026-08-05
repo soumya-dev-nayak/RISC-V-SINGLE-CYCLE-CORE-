@@ -1,5 +1,14 @@
 # `Data_Memory.v` — Data Memory (RAM)
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-10%20Write%20data%20to%20memory%20for%20sw%20instruction.png" width="1100">
+</p>
+
+<p align="center">
+  <em>Figure: Store Word (SW) Memory Write Operation</em><br>
+  <em>Memory access stage showing data being written to Data memory for the <code>sw</code> instruction</em>
+</p>
+
 ## Overview
 The **Data Memory** module models the data-storage (RAM) portion of the single-cycle RISC-V core's memory system. It supports word-aligned **synchronous writes** and **asynchronous (combinational) reads**, and is pre-loaded at simulation start with four labeled test arrays that back the load/store-based test programs in `Instruction_Memory.v` (array sum, count negatives, bubble sort, insertion sort).
 
