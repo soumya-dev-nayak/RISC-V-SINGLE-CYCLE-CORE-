@@ -1,7 +1,6 @@
 # RISC-V CPU — Algorithm Explanations
-### For Classroom Presentation (Teachers & Students)
 
-> **This version is cross-verified against the actual hardware source files** — `Instruction_Memory.v` (the real machine code), `Data_Memory.v` (the real memory layout), and `CPU_top_tb.v` (the real pass/fail test conditions) — so every register map, memory address, and expected result below is guaranteed to match what the CPU actually executes and what the testbench actually checks, not just a idealized textbook version of each algorithm.
+> **This is cross-verified against the actual hardware source files** — `Instruction_Memory.v` (the real machine code), `Data_Memory.v` (the real memory layout), and `CPU_top_tb.v` (the real pass/fail test conditions) — so every register map, memory address, and expected result below is guaranteed to match what the CPU actually executes and what the testbench actually checks, not just a idealized textbook version of each algorithm.
 
 ---
 
