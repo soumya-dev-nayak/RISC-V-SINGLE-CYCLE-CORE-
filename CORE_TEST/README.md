@@ -333,3 +333,52 @@ VCD info: dumpfile cpu_top.vcd opened for output.
   <em>Figure: PART 4 – Factorial Computation</em><br>
   <em>Final simulation output confirming successful completion of the factorial program. Register values verify the expected result (<code>x10 = 120</code>), demonstrating correct implementation of iterative multiplication, loop execution, and program termination.</em>
 </p>
+
+## Part 5: Greatest Common Divisor (GCD) Using Euclidean Algorithm
+
+### Description
+
+This program computes the **Greatest Common Divisor (GCD)** of two positive integers using the **Euclidean subtraction algorithm**. The algorithm repeatedly subtracts the smaller value from the larger until both values become equal. The final GCD is stored in register `x10`.
+
+### Input Values
+
+| Register | Value |
+|---------:|------:|
+| `x5` (`a`) | `48` |
+| `x6` (`b`) | `18` |
+
+### Expected Results
+
+| Register | Description | Expected Value |
+|----------|-------------|---------------:|
+| `x5` | Final value of `a` | `6` |
+| `x6` | Final value of `b` | `6` |
+| `x10` | GCD Result | `6` |
+
+### Simulation Output
+
+```text
+VCD info: dumpfile cpu_top.vcd opened for output.
+
+[cyc   3] PC=0x00000000  instr=0x03000293  x5=0  x6=0  x8=0 x10=0
+[cyc   4] PC=0x00000004  instr=0x01200313  x5=48 x6=0  x8=0 x10=0
+...
+[cyc  33] PC=0x00000020  instr=0x00028513  x5=6  x6=6  x8=0 x10=0
+[cyc  34] PC=0x00000024  instr=0x0000006f  x5=6  x6=6  x8=0 x10=6
+...
+[cyc  62] PC=0x00000024  instr=0x0000006f  x5=6  x6=6  x8=0 x10=6
+```
+
+### Verification Results
+
+```text
+================================================
+  PART 5 : GCD(48, 18) = 6  [Euclidean]
+================================================
+  x5  = 6  (a at halt, expect 6)
+  x6  = 6  (b at halt, expect 6)
+  x10 = 6  (result,    expect 6)
+------------------------------------------------
+  >>> PASS: GCD = 6 <<<
+================================================
+```
