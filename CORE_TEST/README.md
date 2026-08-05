@@ -382,3 +382,115 @@ VCD info: dumpfile cpu_top.vcd opened for output.
   >>> PASS: GCD = 6 <<<
 ================================================
 ```
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-5%20GCD.png" width="1350">
+</p>
+
+<p align="center">
+  <em>Figure: PART 5 – Greatest Common Divisor (GCD)</em><br>
+  <em>Simulation results verifying the Euclidean algorithm using conditional branches, subtraction, and <code>jal</code> instructions. The processor correctly computes <code>GCD(48, 18) = 6</code>.</em>
+</p>
+
+# Part 6: 32-bit Fibonacci Sequence Generation
+## Execution Trace - Complete Fibonacci Sequence
+
+| Iter | Cycle | PC | Instruction | x22 (F(n-1)) | x23 (F(n)) | x24 (F(n+1)) | Status |
+|-----:|------:|----------|----------|-------------:|-------------:|-------------:|--------|
+| 1 | 6 | 0x00000008 | 0x017b0c33 | 0 | 1 | 1 | Running |
+| 2 | 10 | 0x00000008 | 0x017b0c33 | 1 | 1 | 2 | Running |
+| 3 | 16 | 0x00000008 | 0x017b0c33 | 1 | 2 | 3 | Running |
+| 4 | 20 | 0x00000008 | 0x017b0c33 | 2 | 3 | 5 | Running |
+| 5 | 26 | 0x00000008 | 0x017b0c33 | 3 | 5 | 8 | Running |
+| 6 | 30 | 0x00000008 | 0x017b0c33 | 5 | 8 | 13 | Running |
+| 7 | 36 | 0x00000008 | 0x017b0c33 | 8 | 13 | 21 | Running |
+| 8 | 40 | 0x00000008 | 0x017b0c33 | 13 | 21 | 34 | Running |
+| 9 | 46 | 0x00000008 | 0x017b0c33 | 21 | 34 | 55 | Running |
+| 10 | 50 | 0x00000008 | 0x017b0c33 | 34 | 55 | 89 | Running |
+| 11 | 56 | 0x00000008 | 0x017b0c33 | 55 | 89 | 144 | Running |
+| 12 | 60 | 0x00000008 | 0x017b0c33 | 89 | 144 | 233 | Running |
+| 13 | 66 | 0x00000008 | 0x017b0c33 | 144 | 233 | 377 | Running |
+| 14 | 70 | 0x00000008 | 0x017b0c33 | 233 | 377 | 610 | Running |
+| 15 | 76 | 0x00000008 | 0x017b0c33 | 377 | 610 | 987 | Running |
+| 16 | 80 | 0x00000008 | 0x017b0c33 | 610 | 987 | 1597 | Running |
+| 17 | 86 | 0x00000008 | 0x017b0c33 | 987 | 1597 | 2584 | Running |
+| 18 | 90 | 0x00000008 | 0x017b0c33 | 1597 | 2584 | 4181 | Running |
+| 19 | 96 | 0x00000008 | 0x017b0c33 | 2584 | 4181 | 6765 | Running |
+| 20 | 100 | 0x00000008 | 0x017b0c33 | 4181 | 6765 | 10946 | Running |
+| 21 | 106 | 0x00000008 | 0x017b0c33 | 6765 | 10946 | 17711 | Running |
+| 22 | 110 | 0x00000008 | 0x017b0c33 | 10946 | 17711 | 28657 | Running |
+| 23 | 116 | 0x00000008 | 0x017b0c33 | 17711 | 28657 | 46368 | Running |
+| 24 | 120 | 0x00000008 | 0x017b0c33 | 28657 | 46368 | 75025 | Running |
+| 25 | 126 | 0x00000008 | 0x017b0c33 | 46368 | 75025 | 121393 | Running |
+| 26 | 130 | 0x00000008 | 0x017b0c33 | 75025 | 121393 | 196418 | Running |
+| 27 | 136 | 0x00000008 | 0x017b0c33 | 121393 | 196418 | 317811 | Running |
+| 28 | 140 | 0x00000008 | 0x017b0c33 | 196418 | 317811 | 514229 | Running |
+| 29 | 146 | 0x00000008 | 0x017b0c33 | 317811 | 514229 | 832040 | Running |
+| 30 | 150 | 0x00000008 | 0x017b0c33 | 514229 | 832040 | 1346269 | Running |
+| 31 | 156 | 0x00000008 | 0x017b0c33 | 832040 | 1346269 | 2178309 | Running |
+| 32 | 160 | 0x00000008 | 0x017b0c33 | 1346269 | 2178309 | 3524578 | Running |
+| 33 | 166 | 0x00000008 | 0x017b0c33 | 2178309 | 3524578 | 5702887 | Running |
+| 34 | 170 | 0x00000008 | 0x017b0c33 | 3524578 | 5702887 | 9227465 | Running |
+| 35 | 176 | 0x00000008 | 0x017b0c33 | 5702887 | 9227465 | 14930352 | Running |
+| 36 | 180 | 0x00000008 | 0x017b0c33 | 9227465 | 14930352 | 24157817 | Running |
+| 37 | 186 | 0x00000008 | 0x017b0c33 | 14930352 | 24157817 | 39088169 | Running |
+| 38 | 190 | 0x00000008 | 0x017b0c33 | 24157817 | 39088169 | 63245986 | Running |
+| 39 | 196 | 0x00000008 | 0x017b0c33 | 39088169 | 63245986 | 102334155 | Running |
+| 40 | 200 | 0x00000008 | 0x017b0c33 | 63245986 | 102334155 | 165580141 | Running |
+| 41 | 206 | 0x00000008 | 0x017b0c33 | 102334155 | 165580141 | 267914296 | Running |
+| 42 | 210 | 0x00000008 | 0x017b0c33 | 165580141 | 267914296 | 433494437 | Running |
+| 43 | 216 | 0x00000008 | 0x017b0c33 | 267914296 | 433494437 | 701408733 | Running |
+| 44 | 220 | 0x00000008 | 0x017b0c33 | 433494437 | 701408733 | 1134903170 | Running |
+| 45 | 226 | 0x00000008 | 0x017b0c33 | 701408733 | 1134903170 | 1836311903 | Running |
+| 46 | 230 | 0x00000008 | 0x017b0c33 | 1134903170 | 1836311903 | 2971215073 | Running |
+| 47 | 236 | 0x00000008 | 0x017b0c33 | 1836311903 | 2971215073 | 512559680 | Overflow |
+| 48 | 238 | 0x0000001c | 0x000b8c13 | 1836311903 | 2971215073 | 2971215073 | **Exit** |
+
+## Fibonacci Sequence Analysis
+
+| Index | Fibonacci Value | Decimal | Hex | Binary | Status | Notes |
+|------:|----------------:|-----------|----------|---------|--------|-------|
+| F1 | 1 | `1` | `0x00000001` | `00000000000000000000000000000001` | Valid | First term |
+| F2 | 1 | `1` | `0x00000001` | `00000000000000000000000000000001` | Valid | Second term |
+| F3 | 2 | `2` | `0x00000002` | `00000000000000000000000000000010` | Valid | 1+1 |
+| F5 | 5 | `5` | `0x00000005` | `00000000000000000000000000000101` | Valid | |
+| F10 | 55 | `55` | `0x00000037` | `00000000000000000000000000110111` | Valid | |
+| F15 | 610 | `610` | `0x00000262` | `00000000000000000000001001100010` | Valid | |
+| F20 | 10946 | `10946` | `0x00002AA2` | `00000000000000101010101010100010` | Valid | |
+| F25 | 121393 | `121393` | `0x0001D9F1` | `00000000000111011001111111110001` | Valid | |
+| F30 | 1346269 | `1346269` | `0x0014882D` | `00000000010100100010000010101101` | Valid | |
+| F35 | 14930352 | `14930352` | `0x00E3D5D0` | `00001110001111010101110110110000` | Valid | |
+| F40 | 165580141 | `165580141` | `0x0A000D5D` | `00001010000000000000110101011101` | Valid | |
+| F43 | 701408733 | `701408733` | `0x29E4A57D` | `00101001111001001010010101111101` | Valid | |
+| F45 | 1134903170 | `1134903170` | `0x438A6D42` | `01000011100010100110110101000010` | Valid | |
+| **F46** | **1836311903** | **`1836311903`** | **`0x6D59264F`** | **`01101101010110010010011001001111`** | **Valid** | **2nd Largest** |
+| **F47** | **2971215073** | **`2971215073`** | **`0xB1164977`** | **`10110001000101100100100101110111`** | **Valid** | **🏆 Largest 32-bit** |
+| F48 | 4807526976 | `4807526976` | `0x11E771F0` | `00010001111001110111000111110000` | **Overflow** | **Exceeds uint32** |
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-6%20FIBONACI%20op1.png" width="1350">
+</p>
+
+<p align="center">
+  <em>Figure: PART 6 – 32-bit Fibonacci Sequence Generation (Execution Trace)</em><br>
+  <em>Simulation output showing iterative computation of the Fibonacci sequence, register updates, and loop execution until the 32-bit unsigned overflow condition is detected.</em>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-6%20FIBONACI%20op2.png" width="1350">
+</p>
+
+<p align="center">
+  <em>Figure: PART 6 – 32-bit Fibonacci Sequence Verification</em><br>
+  <em>Final simulation results confirming the largest valid 32-bit Fibonacci number (<code>F47 = 2971215073</code>) and correct termination before overflow at <code>F48</code>.</em>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-6%20FIBONACI%20op3.png" width="1350">
+</p>
+
+<p align="center">
+  <em>Figure: PART 6 – GTKWave Timing Diagram</em><br>
+  <em>Waveform illustrating program execution, register transitions, PC progression, and successful overflow-controlled termination of the Fibonacci algorithm.</em>
+</p>
+
+
