@@ -2859,3 +2859,175 @@ With the addition of the **ExecuteR**, **ALU Write Back**, and **BEQ** states, t
 <p align="center">
   <em>Figure: Fig-33 Data flow during the <code>ExecuteR</code> and <code>ALUWB</code> states</em>
 </p>
+
+# Supporting Additional Instructions
+
+After completing the multicycle datapath and FSM for the basic instruction set, the processor can be extended to support additional instructions with only minor modifications. As with the single-cycle processor, we now consider two important instruction groups:
+
+- **I-type ALU instructions** (`addi`, `andi`, `ori`, `slti`)
+- **Jump and Link (`jal`)**
+- 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-34%20Data%20flow%20during%20Decode%20and%20BEQ%20states.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-34 Data flow during Decode and <code>BEQ</code> states</em>
+</p>
+
+One of the major advantages of the multicycle processor is that these instructions can be supported **without introducing any additional datapath hardware**. Only the **Main FSM** requires new execution states and state transitions.
+
+---
+
+## Supporting I-Type ALU Instructions
+
+The **I-type ALU instructions** (`addi`, `andi`, `ori`, and `slti`) are very similar to their corresponding **R-type** instructions.
+
+The only difference is the source of the second ALU operand:
+
+- **R-type instructions** use the contents of register `rs2`.
+- **I-type instructions** use the sign-extended immediate (`ImmExt`).
+
+Since the datapath already contains the necessary multiplexers and immediate generation hardware, no new hardware components are required.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/FSM-10%20Enhanced%20Main%20FSM%20ExecuteI%20and%20JAL%20states.png" width="700">
+</p>
+
+<p align="center">
+  <em>FSM-10 Enhanced Main FSM with <code>ExecuteI</code> and <code>JAL</code> States</em>
+</p>
+
+### FSM State: ExecuteI (`S9`)
+
+To support these instructions, the Main FSM introduces a new **ExecuteI** state.
+
+This state performs the required arithmetic or logical operation using:
+
+- Register `A` (`rs1`) as the first ALU operand.
+- `ImmExt` as the second ALU operand.
+
+Unlike the `ExecuteR` state, where the second operand comes from the Register File, the ExecuteI state selects the sign-extended immediate.
+
+### Control Signals
+
+| Control Signal | Value | Purpose |
+|---------------|:-----:|---------|
+| `ALUSrcA` | `10` | Selects register `A` (`rs1`) as the first ALU operand. |
+| `ALUSrcB` | `01` | Selects `ImmExt` as the second ALU operand. |
+| `ALUOp` | `10` | Allows the ALU Decoder to determine the required ALU operation from the instruction fields. |
+
+After completing the ALU operation, the computed result is stored in the **`ALUOut`** register.
+
+The instruction then proceeds to the existing **ALU Write Back (`ALUWB`)** state, where the value in `ALUOut` is written into the destination register.
+
+By introducing only a single new execution state, the processor is able to support all four I-type ALU instructions.
+
+---
+
+## Supporting the `jal` Instruction
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-35%20Data%20flow%20during%20the%20JAL%20state.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-34 Data flow during the <code>JAL</code> state</em>
+</p>
+
+The **`jal` (Jump and Link)** instruction can also be supported without modifying the datapath.
+
+Only the **Main FSM** requires additional execution states.
+
+Like every other instruction, `jal` begins with the common:
+
+- **Fetch (`S0`)**
+- **Decode (`S1`)**
+
+states.
+
+---
+
+### Jump Target Address Calculation
+
+During the **Decode** state, the processor computes the jump target address.
+
+The **Instruction Decoder** sets:
+
+```text
+ImmSrc = 11
+```
+
+so that the Immediate Generator produces the **21-bit jump immediate**.
+
+The ALU then computes:
+
+```text
+Jump Target = OldPC + ImmExt
+```
+
+The computed jump target address is stored in the **`ALUOut`** register.
+
+---
+
+## FSM State: JAL (`S10`)
+
+After the Decode stage, execution proceeds to the **JAL** state.
+
+This state performs two operations simultaneously:
+
+1. Updates the Program Counter with the jump target address.
+2. Computes the return address (`PC + 4`).
+
+The ALU calculates:
+
+```text
+PC + 4 = OldPC + 4
+```
+
+using:
+
+- `OldPC` as the first operand.
+- Constant `4` as the second operand.
+
+At the same time:
+
+- `ResultSrc = 00` selects the jump target address stored in `ALUOut`.
+- `PCUpdate = 1` enables the Program Counter to load the jump target.
+
+### Control Signals
+
+| Control Signal | Value | Purpose |
+|---------------|:-----:|---------|
+| `ALUSrcA` | `01` | Selects `OldPC` as the first ALU operand. |
+| `ALUSrcB` | `10` | Selects the constant `4` as the second ALU operand. |
+| `ALUOp` | `00` | Configures the ALU to perform addition. |
+| `ResultSrc` | `00` | Selects the jump target address (`ALUOut`) for updating the Program Counter. |
+| `PCUpdate` | `1` | Enables the Program Counter update. |
+
+The jump target address is loaded into the Program Counter, while the computed return address (`PC + 4`) is stored in **`ALUOut`**.
+
+---
+
+## Return Address Write Back
+
+After the **JAL** state, execution proceeds to the existing **ALU Write Back (`ALUWB`)** state.
+
+During this stage, the return address (`PC + 4`), stored in **`ALUOut`**, is written into the destination register (`rd`).
+
+This completes execution of the `jal` instruction, after which the FSM returns to the **Fetch (`S0`)** state to begin processing the next instruction.
+
+---
+
+## Complete Multicycle Main FSM
+
+With the addition of:
+
+- **ExecuteI** for I-type ALU instructions
+- **JAL** for jump-and-link instructions
+
+the Main FSM now supports all instructions implemented in the multicycle processor.
+
+The complete FSM state transition diagram illustrates how the controller progresses through the required execution stages for each instruction while generating the appropriate sequence of control signals.
+
+Although the FSM can be implemented manually using conventional finite-state machine design techniques, it is more practical to describe the controller using a **Hardware Description Language (HDL)** such as **Verilog** or **SystemVerilog**, allowing synthesis tools to automatically generate the required hardware implementation.
