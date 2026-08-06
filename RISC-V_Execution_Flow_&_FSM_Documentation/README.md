@@ -436,3 +436,297 @@ $$
 \frac{\text{Seconds}}{\text{Cycle}}
 \right)
 $$
+
+## Sample Program
+
+To better understand the execution of the single-cycle RISC-V processor, we consider a simple program that exercises several commonly used instruction types, including **load (`lw`)**, **store (`sw`)**, an **R-type instruction (`or`)**, and a **branch instruction (`beq`)**.
+
+The program is assumed to be stored in **Instruction Memory**, beginning at address **`0x1000`**. Each instruction includes its corresponding memory address, instruction type, instruction fields, and hexadecimal machine code representation.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-2%20Sample%20program%20exercising%20different%20types%20of%20instructions.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-2 Sample program exercising different types of instructions</em>
+</p>
+
+### Initial Conditions
+
+Before execution begins, the processor is assumed to have the following initial state:
+
+| Component | Initial Value |
+|-----------|---------------|
+| `PC` | `0x1000` |
+| `x5` | `6` |
+| `x9` | `0x2004` |
+| Memory[`0x2000`] | `10` |
+
+### Program Execution
+
+The execution of the sample program proceeds as follows:
+
+1. **`lw x6, -4(x9)`**
+   - Calculates the effective address:
+     ```
+     0x2004 - 4 = 0x2000
+     ```
+   - Reads the value **10** from memory location **`0x2000`**.
+   - Stores the loaded value into register **`x6`**.
+
+2. **`sw x6, 8(x9)`**
+   - Calculates the effective address:
+     ```
+     0x2004 + 8 = 0x200C
+     ```
+   - Stores the value **10** from register **`x6`** into memory location **`0x200C`**.
+
+3. **`or x4, x5, x6`**
+   - Performs a bitwise OR operation:
+     ```
+     x5 = 6  = 0110₂
+     x6 = 10 = 1010₂
+
+     0110₂ OR 1010₂ = 1110₂ = 14
+     ```
+   - The result (**14**) is written into register **`x4`**.
+
+4. **`beq`**
+   - The branch instruction compares the specified registers.
+   - Since the branch condition is satisfied, execution jumps back to the label **`L7`**, causing the program to execute repeatedly in an infinite loop.
+
+---
+
+## Single-Cycle Datapath
+
+The single-cycle datapath is developed incrementally by adding one hardware component at a time to the basic state elements introduced earlier. Each new component is integrated into the existing datapath until the processor is capable of executing the complete instruction set.
+
+During the construction of the datapath:
+
+- Newly introduced hardware components are highlighted.
+- Previously discussed hardware remains unchanged.
+- The instruction currently being executed is shown to illustrate how data flows through the processor.
+
+### Instruction Fetch
+
+Instruction execution always begins with the **Instruction Fetch (IF)** stage.
+
+The **Program Counter (`PC`)** stores the address of the instruction that is to be executed. Its output is connected directly to the address input of the **Instruction Memory**.
+
+The Instruction Memory uses this address to fetch the corresponding **32-bit instruction**, commonly referred to as **`Instr`**.
+
+For the sample program shown above:
+
+- Initial `PC` = **`0x1000`**
+- The instruction stored at address **`0x1000`** is fetched from Instruction Memory.
+- This fetched instruction is then forwarded to the remaining stages of the datapath for decoding and execution.
+
+> **Note:** Although the processor is 32 bits wide, addresses such as `0x1000` are commonly written without leading zeros (for example, `0x00001000`) to improve readability.
+>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-3%20Fetch%20instruction%20from%20memory.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-3 Fetch instruction from memory</em>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-4%20Read%20source%20operand%20from%20register%20file.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-4 Read source operand from register file</em>
+</p>
+
+## Instruction Decode and Register Read (`lw`)
+
+After the instruction is fetched from the **Instruction Memory**, the processor determines the required operation by decoding the instruction fields.
+
+For the example shown in **Figure 3**, the fetched instruction is:
+
+```text
+Instr = 0xFFC4A303
+```
+
+The datapath shown in the figures highlights these example values to illustrate the flow of data during execution.
+
+Since the fetched instruction is a **`lw` (Load Word)** instruction, the processor must first read the **base address register** from the Register File.
+
+The `lw` instruction follows the **I-type instruction format**, where the source register (`rs1`) is stored in the instruction bits **`Instr[19:15]`**.
+
+These bits are connected directly to the **`A1`** input of the Register File, causing the specified register to be read through output **`RD1`**.
+
+For the sample program:
+
+- `rs1 = x9`
+- `x9 = 0x2004`
+
+Therefore, the Register File outputs:
+
+```text
+RD1 = 0x2004
+```
+
+The datapath for this operation is illustrated in **Figure 4**.
+
+## Immediate Generation
+
+Unlike R-type instructions, the `lw` instruction also requires a **12-bit immediate offset**, stored in the instruction field:
+
+```text
+Instr[31:20]
+```
+
+Since this immediate represents a **signed value**, it must be extended to the processor's 32-bit datapath before it can be used.
+
+This is accomplished by the **Immediate Generator**, which performs **sign extension**.
+
+The sign extension operation is defined as:
+
+```text
+ImmExt[31:12] = Instr[31]
+ImmExt[11:0]  = Instr[31:20]
+```
+
+In other words, the most significant bit of the immediate (the sign bit) is replicated into the upper 20 bits, preserving the value for both positive and negative offsets.
+
+For the sample instruction:
+
+```text
+Immediate = -4
+```
+
+After sign extension:
+
+```text
+ImmExt = 0xFFFFFFFC
+```
+
+## Effective Address Calculation
+
+The processor must now calculate the **effective memory address** from which the data will be loaded.
+
+This address is computed by the **Arithmetic Logic Unit (ALU)** using:
+
+```text
+Effective Address = Base Address + Sign-Extended Immediate
+```
+
+For a `lw` instruction, the ALU is configured to perform **addition**, so the control signal:
+
+```text
+ALUControl = 000
+```
+
+The ALU receives:
+
+- Operand A = `RD1`
+- Operand B = `ImmExt`
+
+For the running example:
+
+```text
+RD1    = 0x2004
+ImmExt = 0xFFFFFFFC
+
+ALUResult = 0x2004 + 0xFFFFFFFC
+          = 0x2000
+```
+
+The resulting **`ALUResult`** becomes the memory address supplied to the **Data Memory**.
+
+## Data Memory Read
+
+The computed address (`ALUResult`) is connected to the address input (`A`) of the **Data Memory**.
+
+Since `lw` performs a **read operation**, the memory returns the data stored at the specified address through the **`ReadData`** output.
+
+For the sample program:
+
+```text
+Address = 0x2000
+
+ReadData = 10
+```
+
+The retrieved data is then forwarded to the Register File for write-back.
+
+## Register Write-Back
+
+The final stage of the `lw` instruction is writing the loaded data into the destination register.
+
+The destination register is specified by the **`rd`** field:
+
+```text
+Instr[11:7]
+```
+
+This field is connected to the Register File write address input (`A3`).
+
+The connections are:
+
+| Register File Port | Source |
+|--------------------|--------|
+| `A3` | `Instr[11:7]` (`rd`) |
+| `WD3` | `ReadData` |
+| `WE3` | `RegWrite` |
+
+During execution of a `lw` instruction:
+
+- `RegWrite = 1`
+
+Therefore, on the **rising edge of the clock**, the value on `ReadData` is written into the destination register.
+
+For the running example:
+
+```text
+ReadData = 10
+
+Destination Register = x6
+
+x6 ← 10
+```
+
+This completes the memory read and register write-back stages of the `lw` instruction.
+
+## Program Counter Update
+
+While the instruction is executing, the processor simultaneously computes the address of the next instruction.
+
+Since every RV32I instruction occupies **32 bits (4 bytes)**, sequential execution simply increments the Program Counter by four.
+
+The next Program Counter value is calculated as:
+
+```text
+PCNext = PC + 4
+```
+
+For the sample program:
+
+```text
+PC      = 0x1000
+
+PCNext  = 0x1004
+```
+
+A dedicated adder computes this value, and on the **next rising edge of the clock**, `PCNext` is written into the Program Counter.
+
+After updating the Program Counter, execution proceeds with the next instruction stored at address **`0x1004`**, completing the execution flow of the **`lw` instruction** in the single-cycle datapath.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-6%20Sign-extend%20the%20immediate.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-5 Sign-extend the immediate</em>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-7%20Compute%20memory%20address.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-6 Compute memory address</em>
+</p>
