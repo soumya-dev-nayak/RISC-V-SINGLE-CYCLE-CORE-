@@ -2475,7 +2475,7 @@ At the completion of the **Fetch** state, the processor has successfully fetched
 After the instruction has been fetched, the processor enters the **Decode** state.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/FSM-2%20Decode.png" width="400">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/FSM-2%20Decode.png" width="550">
 </p>
 
 <p align="center">
@@ -2536,3 +2536,96 @@ The resulting address is stored in the **`ALUOut`** register for use during the 
 | `ALUOp` | `00` | Configures the ALU to perform an addition. |
 
 At the end of this state, the computed effective memory address is available in the **`ALUOut`** register, preparing the processor for the memory access stage of the `lw` instruction.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-30%20Data%20flow%20during%20Fetch%2C%20Decode%2C%20and%20MemAdr%20states.png" width="1100">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-29 Data flow during Fetch, Decode, and MemAdr states</em>
+</p>
+
+
+## FSM State: Memory Read (`S3`)
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/FSM-4%20Memory%20Read%20(MemRead)%20and%20memory%20Write%20back%20(MemWB)%20States.png" width="450">
+</p>
+
+<p align="center">
+  <em>FSM-4 Memory Read (<code>MemRead</code>) and Memory Write Back (<code>MemWB</code>) States</em>
+</p>
+
+Once the effective memory address has been computed and stored in the **`ALUOut`** register, the processor enters the **Memory Read** state.
+
+During this stage:
+
+- The **Address Multiplexer** selects `ALUOut` as the memory address.
+- The unified memory performs a read operation using the calculated address.
+- The value returned by memory is stored in the **`Data`** register for use during the next stage.
+
+### Control Signals
+
+| Control Signal | Value | Purpose |
+|---------------|:-----:|---------|
+| `AdrSrc` | `1` | Selects `ALUOut` as the memory address. |
+
+At the end of this state, the requested memory data is available in the **`Data`** register.
+
+---
+
+## FSM State: Memory Write Back (`S4`)
+
+The **Memory Write Back (MemWB)** state completes the execution of the **`lw`** instruction.
+
+During this stage, the data previously loaded into the **`Data`** register is written back to the destination register specified by the **`rd`** field (`Instr[11:7]`).
+
+The **Result Multiplexer** selects the contents of the `Data` register, and the Register File writes the selected value into the destination register.
+
+### Control Signals
+
+| Control Signal | Value | Purpose |
+|---------------|:-----:|---------|
+| `ResultSrc` | `01` | Selects the `Data` register as the write-back source. |
+| `RegWrite` | `1` | Enables writing the loaded data into the Register File. |
+
+After the write-back operation is complete, the **`lw`** instruction has finished execution, and the FSM returns to the **Fetch (`S0`)** state to begin executing the next instruction.
+
+---
+
+## Updating the Program Counter During Fetch
+
+Before fetching the next instruction, the processor must increment the **Program Counter (`PC`)**.
+
+One possible solution would be to introduce a dedicated FSM state for updating the Program Counter. However, this would unnecessarily increase the number of execution cycles.
+
+Instead, the multicycle processor takes advantage of the fact that the **ALU is idle during the Fetch state** and reuses it to compute **`PC + 4`** while the instruction is simultaneously being fetched from memory.
+
+During the **Fetch** state:
+
+- `ALUSrcA = 00` selects the **Program Counter (`OldPC`)** as the first ALU operand.
+- `ALUSrcB = 10` selects the constant **4** as the second ALU operand.
+- `ALUOp = 00` configures the ALU to perform an addition.
+
+The ALU computes:
+
+```text
+PC + 4
+```
+
+To update the Program Counter:
+
+- `ResultSrc = 10` selects **`ALUResult`** as the value written back.
+- `PCUpdate = 1` enables the Program Counter to load the computed value.
+
+By performing the Program Counter update simultaneously with instruction fetch, the processor avoids introducing an additional execution state, thereby improving overall efficiency without requiring any extra hardware.
+
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-31%20Data%20flow%20during%20MemRead%20and%20MemWB.png" width="1100">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-30 Data flow during MemRead and MemWB states</em>
+</p>
+
