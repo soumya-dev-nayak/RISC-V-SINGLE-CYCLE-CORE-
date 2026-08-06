@@ -425,15 +425,14 @@ Since instruction fetch and data memory access can occur during the same clock c
 
 This documentation focuses on the **Single-Cycle RISC-V Microarchitecture**, providing a detailed explanation of its datapath, control logic, instruction execution flow, and finite state machine (FSM) operation.
 
+
 $$
 \text{Execution Time} =
-(\#\ \text{Instructions})
+(\text{Instruction Count})
 \left(
-\frac{\text{Cycles}}
-{\text{Instruction}}
+\frac{\text{Cycles}}{\text{Instruction}}
 \right)
 \left(
-\frac{\text{Seconds}}
-{\text{Cycle}}
+\frac{\text{Seconds}}{\text{Cycle}}
 \right)
 $$
