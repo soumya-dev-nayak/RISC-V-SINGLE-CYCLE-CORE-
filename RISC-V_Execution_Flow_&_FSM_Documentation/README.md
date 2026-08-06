@@ -1563,3 +1563,98 @@ By separating the Control Unit into the **Main Decoder** and the **ALU Decoder**
   <em>Table-3 ALU Decoder truth table</em>
 </p>
 
+## Example: Single-Cycle Processor Operation for an `and` Instruction
+
+This example demonstrates how the **single-cycle RISC-V processor** executes an **`and`** instruction and illustrates the corresponding control signals and datapath components involved during execution.
+
+The Program Counter (**PC**) initially points to the memory location containing the `and` instruction. The Instruction Memory fetches this instruction and forwards it to the Control Unit and Register File for decoding and execution.
+
+The primary data flow during the execution of an `and` instruction is as follows:
+
+1. The **Instruction Memory** fetches the instruction using the current value of the Program Counter.
+
+2. The **Register File** reads the two source operands specified by the instruction fields:
+   - `rs1`
+   - `rs2`
+
+3. Since both operands originate from the Register File, the second ALU operand (**`SrcB`**) must come from **`RD2`** instead of the sign-extended immediate.
+
+   Therefore,
+
+   ```text
+   ALUSrc = 0
+   ```
+
+4. The **ALU** performs a **bitwise AND** operation on the two register operands.
+
+   Therefore,
+
+   ```text
+   ALUControl = 010
+   ```
+
+5. The output of the ALU represents the final computation result.
+
+   Since the result comes directly from the ALU,
+
+   ```text
+   ResultSrc = 0
+   ```
+
+6. The computed result is written back into the destination register.
+
+   Therefore,
+
+   ```text
+   RegWrite = 1
+   ```
+
+7. The `and` instruction does not access or modify Data Memory.
+
+   Therefore,
+
+   ```text
+   MemWrite = 0
+   ```
+
+8. At the same time, the Program Counter is incremented by four to fetch the next sequential instruction.
+
+   Since execution continues normally without branching,
+
+   ```text
+   PCSrc = 0
+   ```
+
+   causing the processor to select **`PC + 4`** as the next Program Counter value.
+
+### Control Signals for the `and` Instruction
+
+| Control Signal | Value | Purpose |
+|----------------|-------|---------|
+| `ALUSrc` | `0` | Select second register operand (`RD2`) |
+| `ALUControl` | `010` | Perform bitwise AND operation |
+| `ResultSrc` | `0` | Select ALU result for write-back |
+| `RegWrite` | `1` | Enable writing to the Register File |
+| `MemWrite` | `0` | Disable Data Memory write |
+| `PCSrc` | `0` | Select `PC + 4` as the next Program Counter |
+
+### Datapath Observation
+
+Although only a portion of the datapath actively contributes to the execution of the `and` instruction, the remaining hardware continues to operate.
+
+For example:
+
+- The **Immediate Extension Unit** still generates an immediate value.
+- The **Data Memory** may still produce a value on its read output.
+
+However, these values are **ignored** because they are not selected by the datapath multiplexers and therefore do not influence the processor's next state.
+
+This demonstrates an important characteristic of the single-cycle datapath: multiple hardware components may operate simultaneously, but only the outputs selected by the control signals affect the execution of the current instruction.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-15%20Control%20signals%20and%20data%20flow%20while%20executing%20an%20and%20instruction.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-14 Control signals and data flow while executing an <code>and</code> instruction</em>
+</p>
+
