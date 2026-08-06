@@ -3031,3 +3031,233 @@ the Main FSM now supports all instructions implemented in the multicycle process
 The complete FSM state transition diagram illustrates how the controller progresses through the required execution stages for each instruction while generating the appropriate sequence of control signals.
 
 Although the FSM can be implemented manually using conventional finite-state machine design techniques, it is more practical to describe the controller using a **Hardware Description Language (HDL)** such as **Verilog** or **SystemVerilog**, allowing synthesis tools to automatically generate the required hardware implementation.
+
+---
+
+# Performance Analysis
+
+The execution time of a program depends on both the **number of clock cycles required to execute each instruction** and the **duration of each clock cycle**.
+
+Unlike the single-cycle processor, where every instruction completes in exactly one clock cycle, the **multicycle processor** executes different instructions in different numbers of cycles. Although this increases the **Cycles Per Instruction (CPI)**, each clock cycle is significantly shorter because only a portion of the instruction is executed during a single cycle.
+
+## Cycles Per Instruction (CPI)
+
+The number of execution cycles depends on the instruction type.
+
+| Instruction Type | Number of Cycles |
+|------------------|:----------------:|
+| `beq` | **3** |
+| R-type ALU | **4** |
+| I-type ALU | **4** |
+| `jal` | **4** |
+| `sw` | **4** |
+| `lw` | **5** |
+
+Since different instructions require different execution times, the **average CPI** depends on the instruction mix of the program being executed.
+
+---
+
+## Average CPI Calculation
+
+For the **SPECINT2000** benchmark, the approximate instruction distribution is:
+
+| Instruction Type | Percentage |
+|------------------|-----------:|
+| `lw` | 25% |
+| `sw` | 10% |
+| `beq` | 11% |
+| `jal` | 2% |
+| R-type and I-type ALU | 52% |
+
+The average CPI is calculated as the weighted sum of the CPI of each instruction multiplied by its occurrence in the benchmark.
+
+```text
+Average CPI =
+(0.11 × 3)
++ (0.10 + 0.02 + 0.52) × 4
++ (0.25 × 5)
+```
+
+Substituting the values,
+
+```text
+Average CPI = 4.14
+```
+
+Although the worst-case instruction (`lw`) requires **5 cycles**, the average CPI is only **4.14** because the remaining instructions complete in fewer cycles.
+
+---
+
+## Critical Path of the Multicycle Processor
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-36%20Multicycle%20processor%20potential%20critical%20paths.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-36 Multicycle processor potential critical paths</em>
+</p>
+
+The multicycle processor was designed so that each execution stage performs only **one major operation**, such as:
+
+- Register File access
+- Memory access
+- ALU operation
+
+As a result, each clock cycle is significantly shorter than that of the single-cycle processor.
+
+Examining the datapath reveals **two possible critical paths**.
+
+### 1. Program Counter Update Path
+
+This path computes:
+
+```text
+PC + 4
+```
+
+The critical path passes through:
+
+```text
+PC
+→ SrcA Multiplexer
+→ ALU
+→ Result Multiplexer
+→ PC
+```
+
+This path is responsible for updating the Program Counter during the Fetch stage.
+
+---
+
+### 2. Memory Read Path
+
+The second possible critical path occurs during a load operation.
+
+The path passes through:
+
+```text
+ALUOut
+→ Result Multiplexer
+→ Address Multiplexer
+→ Memory
+→ Data Register
+```
+
+This path determines the delay associated with reading data from memory.
+
+---
+
+## Multicycle Clock Period
+
+After every state transition, the controller must decode the current state and generate the required control signals before the datapath can proceed.
+
+Therefore, the clock period of the multicycle processor is given by:
+
+```text
+Tc_multi =
+tpcq
++ tdec
++ max(tmux + tALU, tmux + tmem)
++ tsetup
+```
+
+or,
+
+```text
+Tc_multi =
+tpcq + tdec + max(tALU, tmem) + tmux + tsetup
+```
+
+The actual numerical value depends on the implementation technology and the delays of the individual hardware components.
+
+---
+
+## Performance Comparison
+
+Using the delays obtained for the **7 nm CMOS** implementation:
+
+```text
+Tc_multi =
+40 + 25 + 2(30) + 200 + 50
+= 375 ps
+```
+
+Using:
+
+- **100 billion instructions**
+- **Average CPI = 4.14**
+
+the total execution time becomes:
+
+```text
+Tmulti =
+(100 × 10⁹ instructions)
+× (4.14 cycles/instruction)
+× (375 × 10⁻¹² s/cycle)
+
+= 155 seconds
+```
+
+For comparison, the previously calculated execution time of the **single-cycle processor** was:
+
+```text
+Tsingle = 75 seconds
+```
+
+Therefore,
+
+```text
+Multicycle Processor : 155 seconds
+Single-Cycle Processor : 75 seconds
+```
+
+Under these assumptions, the **single-cycle processor executes the benchmark faster** than the multicycle processor.
+
+---
+
+## Why is the Multicycle Processor Slower?
+
+One of the primary motivations for designing a multicycle processor was to prevent simple instructions from taking as long as the slowest instruction (`lw`).
+
+However, this example shows that the multicycle processor can still be slower.
+
+There are two main reasons:
+
+- The execution stages are **not perfectly balanced**, meaning some stages still require considerably more time than others.
+- Every execution stage incurs additional **clocking overhead**, including the **clock-to-Q delay** and **setup time** of the intermediate registers.
+
+In this implementation, the **90 ps** overhead associated with register clocking is paid during **every execution stage**, rather than once per instruction as in the single-cycle processor.
+
+As a result, the reduction in clock period is not sufficient to compensate for the increase in the number of execution cycles.
+
+---
+
+## Hardware Cost Comparison
+
+Although the multicycle processor is slower in this performance example, it offers several hardware advantages over the single-cycle design.
+
+### Advantages
+
+- Uses a **single unified memory** for both instructions and data.
+- Reuses a single **ALU** for multiple operations.
+- Eliminates two dedicated adders used in the single-cycle datapath.
+- Reduces overall hardware cost by sharing functional units.
+
+### Additional Hardware Required
+
+To support multicycle execution, the processor introduces several extra components:
+
+- Five **non-architectural registers** for storing intermediate results.
+- Additional multiplexers for selecting operands, memory addresses, and write-back data.
+- A more sophisticated **Finite State Machine (FSM)** controller.
+
+Overall, the multicycle processor represents a trade-off between **hardware cost** and **execution performance**, sacrificing speed in exchange for improved hardware resource utilization and a more economical implementation.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/FSM-11%20Complete%20multicycle%20control%20FSM.png" width="800">
+</p>
+
+<p align="center">
+  <em>FSM-11 Complete Multicycle Control FSM</em>
+</p>
