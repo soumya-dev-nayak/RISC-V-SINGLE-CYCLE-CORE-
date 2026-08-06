@@ -298,8 +298,8 @@ module Instruction_Memory
         Imem[20] = 32'hFBDFF06F; // jal   x0, -68       ; → OUTER (80-68=12) ✓
         // HALT (byte 84):
         Imem[21] = 32'h0000006F; // jal   x0, 0         ; HALT
-*/
 
+*/
         // ============================================================
         // PART 8 : INSERTION SORT  (ascending, handles signed negatives)
         //   Data at word 0 (byte 0): {-5, 12, -3, 8, -1}
@@ -314,7 +314,7 @@ module Instruction_Memory
         //   Testbench PART 8: check mem[0..4] == {-5,-3,-1,8,12}
         // ============================================================
 
-        /*
+        
         Imem[0]  = 32'h00100293; // addi  x5, x0, 1     ; i=1
         Imem[1]  = 32'h00500513; // addi  x10,x0, 5     ; N=5
         Imem[2]  = 32'h00400E13; // addi  x28,x0, 4     ; word_size=4
@@ -340,7 +340,7 @@ module Instruction_Memory
         Imem[18] = 32'hFD9FF06F; // jal   x0, -40       ; → INNER (72-40=32) ✓
         // HALT (byte 76):
         Imem[19] = 32'h0000006F; // jal   x0, 0         ; HALT
-        */
+        
 
 
     end

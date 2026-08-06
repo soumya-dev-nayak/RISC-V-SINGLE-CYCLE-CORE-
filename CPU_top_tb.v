@@ -354,7 +354,7 @@ integer fib_iter;
     end
    */ 
 
-    /*
+    
     // ============================================================
     // PART 7 : BUBBLE SORT  (signed array)  [ACTIVE]
     //   Instruction_Memory PART 7 must be active.
@@ -365,6 +365,7 @@ integer fib_iter;
     //   to verify swap logic and iteration counts.
     // ============================================================
 
+/*
     initial begin
         $dumpfile("cpu_top.vcd"); $dumpvars(0, CPU_top_tb);
         MONITOR_ON = 1;  // show every cycle's state
@@ -398,8 +399,8 @@ integer fib_iter;
         $display("================================================\n");
         $finish;
     end
-
 */
+
 
     // ============================================================
     // PART 8 : INSERTION SORT  (signed array)
@@ -409,7 +410,7 @@ integer fib_iter;
     //   Faster than bubble sort (~81 cycles vs ~111)
     // ============================================================
 
-/*    
+   
     initial begin
         $dumpfile("cpu_top.vcd"); $dumpvars(0, CPU_top_tb);
         MONITOR_ON = 1;
@@ -443,6 +444,6 @@ integer fib_iter;
         $finish;
     end
     
-*/
+
 
 endmodule
