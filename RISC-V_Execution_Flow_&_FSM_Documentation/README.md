@@ -2698,3 +2698,164 @@ The first two FSM states (**Fetch** and **Decode**) remain unchanged, while the 
   <em>Figure: Fig-31 Data flow while incrementing Program Counter (<code>PC</code>) in the Fetch state</em>
 </p>
 
+## Extending the FSM for R-Type Instructions
+
+After completing the common **Fetch (`S0`)** and **Decode (`S1`)** states, **R-type instructions** proceed to the **ExecuteR** state, where the required arithmetic or logical operation is performed by the ALU.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/FSM-6%20Memory%20write.png" width="450">
+</p>
+
+<p align="center">
+  <em>FSM-6 Memory Write (<code>MemWrite</code>) State</em>
+</p>
+
+During this stage, the processor selects the two source operands read from the Register File and forwards them to the ALU.
+
+- `A`, containing the value of `rs1`, is selected as the first ALU operand.
+- `WriteData`, containing the value of `rs2`, is selected as the second ALU operand.
+
+Unlike load and store instructions, the specific ALU operation depends on the instruction being executed. Therefore, the **ALU Decoder** uses the instruction's function fields (`funct3` and `funct7`) together with `ALUOp` to generate the appropriate **`ALUControl`** signal.
+
+The computed result is stored in the **`ALUOut`** register at the end of the execution stage.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-33%20Data%20flow%20during%20the%20memory%20write%20(MemWrite)%20state.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-32 Data flow during the Memory Write (<code>MemWrite</code>) state</em>
+</p>
+
+### FSM State: ExecuteR (`S6`)
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/FSM-7%20Execute%20R-type(ExecuteR)%20and%20ALU%20%20wtiteBack%20(ALUWB)%20States.png" width="450">
+</p>
+
+<p align="center">
+  <em>FSM-7 Execute R-type (<code>ExecuteR</code>) and ALU Write Back (<code>ALUWB</code>) States</em>
+</p>
+
+During the **ExecuteR** state:
+
+- `ALUSrcA = 10` selects register `A` (`rs1`) as the first ALU operand.
+- `ALUSrcB = 00` selects `WriteData` (`rs2`) as the second ALU operand.
+- `ALUOp = 10` enables the ALU Decoder to determine the required arithmetic or logical operation.
+
+### Control Signals
+
+| Control Signal | Value | Purpose |
+|---------------|:-----:|---------|
+| `ALUSrcA` | `10` | Selects register `A` (`rs1`) as the first ALU operand. |
+| `ALUSrcB` | `00` | Selects `WriteData` (`rs2`) as the second ALU operand. |
+| `ALUOp` | `10` | Allows the ALU Decoder to determine the required ALU operation. |
+
+---
+
+## FSM State: ALU Write Back (`S7`)
+
+After the ALU operation is completed, the processor enters the **ALU Write Back (`ALUWB`)** state.
+
+The value stored in the **`ALUOut`** register is selected as the write-back result and written into the destination register specified by the `rd` field.
+
+### Control Signals
+
+| Control Signal | Value | Purpose |
+|---------------|:-----:|---------|
+| `ResultSrc` | `00` | Selects `ALUOut` as the write-back source. |
+| `RegWrite` | `1` | Enables writing the ALU result into the Register File. |
+
+Once the result has been written back, the instruction is complete, and the FSM transitions back to the **Fetch (`S0`)** state.
+
+---
+
+# Extending the FSM for the `beq` Instruction
+
+The **`beq` (Branch if Equal)** instruction requires two operations:
+
+1. Compute the branch target address.
+2. Compare the two source registers.
+
+To improve efficiency, the multicycle processor performs the branch target address calculation during the **Decode** state, since the ALU is otherwise unused at that time.
+
+---
+
+## Branch Target Address Calculation During Decode
+
+While decoding the instruction, the ALU computes:
+
+```text
+Branch Target = OldPC + ImmExt
+```
+
+where:
+
+- `OldPC` contains the Program Counter value before it was incremented.
+- `ImmExt` is the sign-extended 13-bit branch offset.
+
+The computed branch target address is stored in the **`ALUOut`** register for later use.
+
+### Control Signals During Decode
+
+| Control Signal | Value | Purpose |
+|---------------|:-----:|---------|
+| `ALUSrcA` | `01` | Selects `OldPC` as the first ALU operand. |
+| `ALUSrcB` | `01` | Selects the branch immediate (`ImmExt`) as the second ALU operand. |
+| `ALUOp` | `00` | Configures the ALU to perform addition. |
+
+By performing this computation during the Decode stage, no additional execution cycle is required solely for branch address calculation.
+
+---
+
+## FSM State: BEQ (`S8`)
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/FSM-9%20Enhanced%20Decode%20state%2C%20with%20branch%20target%20address%20calculation%2C%20and%20BEQ%20state.png" width="600">
+</p>
+
+<p align="center">
+  <em>FSM-9 Enhanced Decode State with Branch Target Address Calculation and <code>BEQ</code> State</em>
+</p>
+
+After the Decode stage, the processor enters the **BEQ** state.
+
+During this state, the ALU compares the two source registers by performing a subtraction:
+
+```text
+rs1 - rs2
+```
+
+If both operands are equal, the subtraction result becomes zero, causing the ALU to assert the **`Zero`** signal.
+
+The **Branch** control signal is asserted during this state. If both:
+
+- `Branch = 1`
+- `Zero = 1`
+
+then the Program Counter is updated with the branch target address previously stored in **`ALUOut`**.
+
+The branch target address reaches the Program Counter through the **Result Multiplexer**, which selects `ALUOut` as the next Program Counter value.
+
+### Control Signals
+
+| Control Signal | Value | Purpose |
+|---------------|:-----:|---------|
+| `ALUSrcA` | `10` | Selects register `A` (`rs1`) as the first ALU operand. |
+| `ALUSrcB` | `00` | Selects `WriteData` (`rs2`) as the second ALU operand. |
+| `ALUOp` | `01` | Configures the ALU to perform subtraction. |
+| `Branch` | `1` | Enables conditional Program Counter update when `Zero = 1`. |
+| `ResultSrc` | `00` | Selects `ALUOut` as the next Program Counter value. |
+
+If the registers are equal, execution continues from the computed branch target. Otherwise, the Program Counter retains its sequential value (`PC + 4`), and execution proceeds with the next instruction.
+
+With the addition of the **ExecuteR**, **ALU Write Back**, and **BEQ** states, the Main FSM is capable of controlling the execution of all supported instructions in the multicycle processor.
+
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Data%20flow%20during%20the%20ExecuteR%20and%20ALUWB%20states.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-33 Data flow during the <code>ExecuteR</code> and <code>ALUWB</code> states</em>
+</p>
