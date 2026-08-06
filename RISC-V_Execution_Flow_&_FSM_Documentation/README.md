@@ -1554,3 +1554,12 @@ to determine the required ALU operation, such as:
 The resulting **`ALUControl`** signal is then forwarded to the ALU, allowing it to execute the appropriate arithmetic or logical operation.
 
 By separating the Control Unit into the **Main Decoder** and the **ALU Decoder**, the overall processor design becomes more modular, easier to understand, and simpler to implement. The Main Decoder identifies the instruction class and generates the primary control signals, while the ALU Decoder focuses solely on selecting the correct ALU operation based on the instruction's function fields.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Table-3%20ALU%20Decoder%20truth%20table.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Table-3 ALU Decoder truth table</em>
+</p>
+
