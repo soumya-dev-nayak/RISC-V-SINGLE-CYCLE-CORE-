@@ -1914,7 +1914,7 @@ Execution Time
 Therefore, the program requires **75 seconds** to execute on the single-cycle processor.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Table-7%20Delay%20of%20circuit%20elements.png" width="1000">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Table-7%20Delay%20of%20circuit%20elements.png" width="600">
 </p>
 
 <p align="center">
