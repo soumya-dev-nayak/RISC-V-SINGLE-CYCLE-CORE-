@@ -2629,3 +2629,72 @@ By performing the Program Counter update simultaneously with instruction fetch, 
   <em>Figure: Fig-30 Data flow during MemRead and MemWB states</em>
 </p>
 
+
+## Extending the FSM for the `sw` Instruction
+
+After supporting the **`lw`** instruction, the **Main FSM** is extended to execute the **`sw` (Store Word)** instruction.
+
+Like all instructions in the multicycle processor, the `sw` instruction begins by passing through the common **Fetch (`S0`)** and **Decode (`S1`)** states.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/FSM-5%20Incrementing%20PC%20in%20the%20Fetch%20State.png" width="300">
+</p>
+
+<p align="center">
+  <em>FSM-5 Incrementing Program Counter (<code>PC</code>) in the Fetch State</em>
+</p>
+
+
+During these stages:
+
+- The instruction is fetched from memory.
+- The source registers are read from the Register File.
+- The immediate value is sign-extended.
+- The base address and data to be stored are placed into the non-architectural registers.
+
+The processor then enters the **Memory Address Computation (`S2`)** state, which is shared with the `lw` instruction.
+
+During this state, the ALU computes the effective memory address:
+
+```text
+Effective Address = Base Address + ImmExt
+```
+
+The calculated address is stored in the **`ALUOut`** register.
+
+---
+
+## FSM State: Memory Write (`S5`)
+
+After the memory address has been computed, the `sw` instruction proceeds to the **Memory Write (`MemWrite`)** state.
+
+During this stage:
+
+- The **Address Multiplexer** selects **`ALUOut`** as the memory address.
+- The contents of the **`WriteData`** register, which holds the value originally read from register `rs2`, are connected directly to the memory write-data input (`WD`).
+- The **`MemWrite`** control signal is asserted, enabling the memory write operation.
+
+As a result, the value stored in register `rs2` is written into the memory location specified by the effective address.
+
+### Control Signals
+
+| Control Signal | Value | Purpose |
+|---------------|:-----:|---------|
+| `AdrSrc` | `1` | Selects `ALUOut` as the memory address. |
+| `MemWrite` | `1` | Enables writing data into memory. |
+
+Unlike the **`lw`** instruction, the `sw` instruction **does not perform a write-back stage**, since its purpose is to update memory rather than the Register File.
+
+After the memory write operation is complete, the instruction has finished execution, and the **Main FSM** transitions directly back to the **Fetch (`S0`)** state to begin processing the next instruction.
+
+The first two FSM states (**Fetch** and **Decode**) remain unchanged, while the newly added **Memory Write (`S5`)** state extends the controller to support store operations.
+
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-32%20Data%20flow%20while%20incrementing%20PC%20in%20the%20Fetch%20state.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-31 Data flow while incrementing Program Counter (<code>PC</code>) in the Fetch state</em>
+</p>
+
