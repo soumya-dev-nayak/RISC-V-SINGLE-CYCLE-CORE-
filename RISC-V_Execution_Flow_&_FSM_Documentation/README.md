@@ -1327,3 +1327,93 @@ Since a branch instruction neither writes to memory nor updates the Register Fil
   <em>Figure: Fig-11 Datapath enhancements for <code>beq</code> &amp; also showing the <code>ImmSrc</code> encoding</em>
 </p>
 
+### Example Execution of the `beq` Instruction
+
+In the sample program, after the execution of the `or` instruction, the Program Counter contains:
+
+```text
+PC = 0x100C
+```
+
+The Instruction Memory fetches the following instruction:
+
+```text
+beq x4, x4, L7
+Machine Code : 0xFE420AE3
+```
+
+The processor executes the instruction as follows:
+
+1. The Register File reads both source operands.
+   - `rs1 = x4 = 14`
+   - `rs2 = x4 = 14`
+
+2. Since `beq` compares two registers, the Control Unit configures the ALU to perform subtraction.
+
+   ```text
+   ALUControl = 001
+   ```
+
+3. The ALU computes:
+
+   ```text
+   14 - 14 = 0
+   ```
+
+4. Because the subtraction result is zero, the ALU asserts the **`Zero`** flag, indicating that both registers are equal.
+
+5. Simultaneously, the **Immediate Extension Unit** extracts the B-type immediate and sign-extends it to 32 bits.
+
+   ```text
+   ImmExt = 0xFFFFFFF4
+          = -12
+   ```
+
+   > **Note:** The instruction stores the branch immediate in a rearranged (B-type) format. Before sign extension, the upper 12 bits of the immediate are effectively represented as **`0xFFA`**.
+
+6. The branch target address is calculated using the dedicated branch adder.
+
+   ```text
+   PCTarget = PC + ImmExt
+            = 0x100C + (-12)
+            = 0x1000
+   ```
+
+7. Since the current instruction is `beq` and the **`Zero`** flag is asserted, the **PCNext Multiplexer** selects **`PCTarget`** instead of `PC + 4`.
+
+8. On the rising edge of the clock, the Program Counter is updated to:
+
+   ```text
+   PC = 0x1000
+   ```
+
+The processor therefore branches back to the beginning of the program, causing the instruction sequence to repeat.
+
+---
+
+## Completed Single-Cycle Datapath
+
+With the addition of support for **`lw`**, **`sw`**, **R-type instructions**, and **`beq`**, the single-cycle datapath is now capable of executing the complete subset of RISC-V instructions implemented in this project.
+
+The datapath includes all essential hardware components required for instruction execution, including:
+
+- Instruction Memory
+- Program Counter (PC)
+- Register File
+- Immediate Extension Unit
+- Arithmetic Logic Unit (ALU)
+- Data Memory
+- Adders for `PC + 4` and branch target calculation
+- Multiplexers for ALU source selection, write-back selection, and next Program Counter selection
+
+The processor has been constructed by first identifying the architectural state elements and then systematically introducing the necessary combinational logic to connect them. This modular design approach results in a complete single-cycle datapath capable of fetching, decoding, executing, accessing memory, writing back results, and updating the Program Counter within a single clock cycle.
+
+The remaining component required for a fully functional processor is the **Control Unit**, which generates the control signals that direct the operation of the datapath during the execution of each instruction. The next section describes how these control signals are generated.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-13%20Complete%20single-cycle%20processor.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-12 Complete single-cycle processor</em>
+</p>
