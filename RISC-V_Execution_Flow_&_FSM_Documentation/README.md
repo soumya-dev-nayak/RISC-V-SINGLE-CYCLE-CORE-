@@ -2475,7 +2475,7 @@ At the completion of the **Fetch** state, the processor has successfully fetched
 After the instruction has been fetched, the processor enters the **Decode** state.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/FSM-2%20Decode.png" width="700">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/FSM-2%20Decode.png" width="400">
 </p>
 
 <p align="center">
@@ -2504,7 +2504,7 @@ Once the Decode stage completes, the processor has all the information necessary
 ## FSM State: Memory Address Calculation (`S2`)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/FSM-3%20Memory%20Address%20Comupation.png" width="700">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/FSM-3%20Memory%20Address%20Comupation.png" width="500">
 </p>
 
 <p align="center">
