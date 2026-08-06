@@ -631,3 +631,34 @@ VCD info: dumpfile cpu_top.vcd opened for output.
 ## Basys-3 FPGA Hardware Demonstration
 
 To validate the design beyond simulation, the complete RISC-V Single-Cycle Core was synthesized, implemented, and deployed on the Digilent Basys-3 FPGA. The following hardware demonstration confirms the successful execution of the signed Insertion Sort program on the physical FPGA, verifying correct instruction execution, data memory updates, control logic, and overall processor functionality in real hardware.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/Basys-3_Testing/Basys-3%20Board%20Initialisation.jpeg" width="700">
+</p>
+
+<p align="center">
+  <em>Figure: Digilent Basys-3 FPGA board initialized with the RISC-V Single-Cycle Core design.</em>
+</p>
+
+## 🎥 Basys-3 FPGA Hardware Demonstration
+
+---
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/Basys-3_Testing/Basys-3%20Board%20Initialisation.jpeg" width="780">
+</p>
+
+<h3 align="center">RISC-V Single-Cycle Core • Fibonacci Series Execution</h3>
+
+<p align="center">
+  <a href="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/Basys-3_Testing/Basys-3%20FPGA%20RISC%20Core(Fibonacci%20Series)%20Detailed%20Execution%20Video.mp4">
+    <img src="https://img.shields.io/badge/▶%20Watch%20Detailed%20Execution-Open%20Video-success?style=for-the-badge&logo=youtube">
+  </a>
+</p>
+
+<p align="center">
+  <em>
+    A detailed hardware walkthrough demonstrating instruction execution, register updates,
+    program flow, and real-time Fibonacci computation on the Digilent Basys-3 FPGA.
+  </em>
+</p>
