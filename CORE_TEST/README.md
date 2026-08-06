@@ -493,4 +493,68 @@ VCD info: dumpfile cpu_top.vcd opened for output.
   <em>Waveform illustrating program execution, register transitions, PC progression, and successful overflow-controlled termination of the Fibonacci algorithm.</em>
 </p>
 
+## Bubble Sort (Signed Integers)
 
+### Simulation Output
+
+```text
+VCD info: dumpfile cpu_top.vcd opened for output.
+
+================================================
+  PART 7 : BUBBLE SORT  (signed)
+  Input:  mem[0..4] = {-5, 12, -3, 8, -1}
+  Sorting ascending using signed BLT comparison...
+  [cyc####] PC=0xXXXX  instr=0xXXXXXXXX  x5=N-1  x6=i  x8=j  x10=arr[j]
+================================================
+  [cyc   3] PC=0x00000000  instr=0x00400293  x5=0 x6=0 x8=0 x10=0
+  [cyc   4] PC=0x00000004  instr=0x00000313  x5=4 x6=0 x8=0 x10=0
+  [cyc   5] PC=0x00000008  instr=0x00400e13  x5=4 x6=0 x8=0 x10=0
+  ...
+  [cyc 300] PC=0x00000054  instr=0x0000006f  x5=4 x6=4 x8=1 x10=-5
+  [cyc 301] PC=0x00000054  instr=0x0000006f  x5=4 x6=4 x8=1 x10=-5
+  [cyc 302] PC=0x00000054  instr=0x0000006f  x5=4 x6=4 x8=1 x10=-5
+
+================================================
+  RESULT  (Data Memory after sort):
+  mem[0] =   -5  (expect -5)
+  mem[1] =   -3  (expect -3)
+  mem[2] =   -1  (expect -1)
+  mem[3] =    8  (expect  8)
+  mem[4] =   12  (expect 12)
+  Total cycles executed: 302
+------------------------------------------------
+  >>> PASS: Array sorted correctly {-5,-3,-1,8,12} <<<
+================================================
+```
+
+### Result
+
+| Parameter | Value |
+|-----------|-------|
+| **Input Array** | `{-5, 12, -3, 8, -1}` |
+| **Sorted Array** | `{-5, -3, -1, 8, 12}` |
+| **Total Cycles** | `302` |
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-7%20BUBBLE%20SORT%20op1.png" width="1350">
+</p>
+
+<p align="center">
+  <em>Figure: PART 7 – Bubble Sort Execution and Successful Array Sorting Process op1</em>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-7%20BUBBLE%20SORT%20op2.png" width="1350">
+</p>
+
+<p align="center">
+  <em>Figure: PART 7 – Bubble Sort Execution and Successful Array Sorting Process op2</em>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-7%20BUBBLE%20SORT%20op3.png" width="1350">
+</p>
+
+<p align="center">
+  <em>Figure: PART 7 – Bubble Sort Execution and Successful Array Sorting Process op3</em>
+</p>
