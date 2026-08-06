@@ -1423,7 +1423,7 @@ The remaining component required for a fully functional processor is the **Contr
 The **Control Unit** is responsible for generating all the control signals required to correctly execute each instruction in the single-cycle processor. These control signals are derived from specific fields of the fetched instruction and determine how the datapath components operate during a clock cycle.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-14%20Single-Cycle%20Processor%20Control%20unit.png" width="1000">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-14%20Single-Cycle%20Processor%20Control%20unit.png" width="500">
 </p>
 
 <p align="center">
