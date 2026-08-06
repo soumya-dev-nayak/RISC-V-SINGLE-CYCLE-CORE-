@@ -640,25 +640,35 @@ To validate the design beyond simulation, the complete RISC-V Single-Cycle Core 
   <em>Figure: Digilent Basys-3 FPGA board initialized with the RISC-V Single-Cycle Core design.</em>
 </p>
 
-## 🎥 Basys-3 FPGA Hardware Demonstration
+## 🎥 Basys-3 FPGA RISC-V Core Demonstration
 
----
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/Basys-3_Testing/Basys-3%20Board%20Initialisation.jpeg" width="780">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/Basys-3_Testing/Basys-3%20Board%20Initialisation.jpeg" width="850">
 </p>
 
-<h3 align="center">RISC-V Single-Cycle Core • Fibonacci Series Execution</h3>
+<p align="center">
+  <strong>Complete Hardware Execution on Basys-3 FPGA</strong><br>
+  <sub>Instruction execution • Register updates • Program flow • Seven-segment display output</sub>
+</p>
 
 <p align="center">
-  <a href="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/Basys-3_Testing/Basys-3%20FPGA%20RISC%20Core(Fibonacci%20Series)%20Detailed%20Execution%20Video.mp4">
-    <img src="https://img.shields.io/badge/▶%20Watch%20Detailed%20Execution-Open%20Video-success?style=for-the-badge&logo=youtube">
-  </a>
+
+<a href="https://youtu.be/5Xu6RuB6tUI">
+  <img src="https://img.shields.io/badge/▶%20Watch%20on%20YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white">
+</a>
+
+&nbsp;&nbsp;&nbsp;
+
+<a href="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/Basys-3_Testing/Basys-3%20FPGA%20RISC%20Core(Fibonacci%20Series)%20Detailed%20Execution%20Video.mp4">
+  <img src="https://img.shields.io/badge/⬇%20Download%20Video-0A66C2?style=for-the-badge&logo=github&logoColor=white">
+</a>
+
 </p>
 
 <p align="center">
   <em>
-    A detailed hardware walkthrough demonstrating instruction execution, register updates,
-    program flow, and real-time Fibonacci computation on the Digilent Basys-3 FPGA.
+    Live demonstration of the custom single-cycle RISC-V processor running on the Basys-3 FPGA,
+    showcasing real-time execution, control flow, register activity, and successful Fibonacci program implementation.
   </em>
 </p>
