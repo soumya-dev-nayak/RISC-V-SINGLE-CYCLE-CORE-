@@ -472,7 +472,6 @@ VCD info: dumpfile cpu_top.vcd opened for output.
 
 <p align="center">
   <em>Figure: PART 6 – 32-bit Fibonacci Sequence Generation (Execution Trace)</em><br>
-  <em>Simulation output showing iterative computation of the Fibonacci sequence, register updates, and loop execution until the 32-bit unsigned overflow condition is detected.</em>
 </p>
 
 <p align="center">
@@ -481,7 +480,6 @@ VCD info: dumpfile cpu_top.vcd opened for output.
 
 <p align="center">
   <em>Figure: PART 6 – 32-bit Fibonacci Sequence Verification</em><br>
-  <em>Final simulation results confirming the largest valid 32-bit Fibonacci number (<code>F47 = 2971215073</code>) and correct termination before overflow at <code>F48</code>.</em>
 </p>
 
 <p align="center">
@@ -489,11 +487,10 @@ VCD info: dumpfile cpu_top.vcd opened for output.
 </p>
 
 <p align="center">
-  <em>Figure: PART 6 – GTKWave Timing Diagram</em><br>
-  <em>Waveform illustrating program execution, register transitions, PC progression, and successful overflow-controlled termination of the Fibonacci algorithm.</em>
+  <em>Figure: PART 6 – Timing Diagram for overflow-controlled termination of the Fibonacci algorithm</em><br>
 </p>
 
-## Bubble Sort (Signed Integers)
+## PART 7: Bubble Sort (Signed Integers)
 
 ### Simulation Output
 
