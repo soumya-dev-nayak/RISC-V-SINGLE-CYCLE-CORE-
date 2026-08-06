@@ -1658,3 +1658,135 @@ This demonstrates an important characteristic of the single-cycle datapath: mult
   <em>Figure: Fig-14 Control signals and data flow while executing an <code>and</code> instruction</em>
 </p>
 
+### Supporting the `addi` Instruction
+
+The `addi` (*Add Immediate*) instruction is an **I-type** instruction that adds the contents of the source register `rs1` to a **sign-extended 12-bit immediate** and stores the result in the destination register `rd`.
+
+```assembly
+addi rd, rs1, imm
+```
+
+One of the advantages of the existing single-cycle datapath is that it already contains all the necessary hardware required to execute the `addi` instruction. Since the ALU is already capable of adding a register operand with a sign-extended immediate (as used by the `lw` and `sw` instructions), **no modifications to the datapath are required**. Only the **Main Decoder** needs to be updated with the appropriate control signals.
+
+The required control signal values for the `addi` instruction are summarized below.
+
+| Control Signal | Value | Description |
+|---------------|:-----:|-------------|
+| `RegWrite` | `1` | Enables writing the ALU result back to the destination register `rd`. |
+| `ImmSrc` | `00` | Selects the I-type immediate (`Instr[31:20]`) and sign-extends it. |
+| `ALUSrc` | `1` | Selects the sign-extended immediate as the second ALU operand (`SrcB`). |
+| `MemWrite` | `0` | No data memory write operation is performed. |
+| `Branch` | `0` | The instruction does not perform a branch operation. |
+| `ResultSrc` | `0` | The value written back to the register file comes directly from the ALU. |
+| `ALUOp` | `10` | Allows the ALU Decoder to determine the required ALU operation. |
+
+For the `addi` instruction:
+
+- `funct3 = 000`
+- `op5 = 0`
+
+These values are decoded by the **ALU Decoder**, which generates:
+
+```text
+ALUControl = 000
+```
+
+This configures the ALU to perform an **addition** operation between the register operand and the sign-extended immediate.
+
+An additional benefit of this implementation is that it automatically supports several other **I-type ALU instructions**, including:
+
+- `andi`
+- `ori`
+- `slti`
+
+These instructions share the same opcode (`0010011`) and require identical Main Decoder control signals. They differ only in the `funct3` field, which is already interpreted by the **ALU Decoder** to generate the appropriate `ALUControl` signal. Consequently, once the Main Decoder recognizes the I-type ALU opcode, these instructions are supported without requiring any additional datapath modifications.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Table-4%20Main%20Decoder%20truth%20table%20enhanced%20to%20support%20addi.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Table-4 Main Decoder truth table enhanced to support <code>addi</code></em>
+</p>
+
+### Supporting the `jal` Instruction
+
+The `jal` (*Jump and Link*) instruction performs two operations simultaneously:
+
+1. Stores the return address (`PC + 4`) into the destination register `rd`.
+2. Updates the **Program Counter (`PC`)** to the jump target address.
+
+```assembly
+jal rd, imm
+```
+
+The jump target address is computed as:
+
+```text
+PC + imm
+```
+
+where `imm` is a **21-bit signed immediate** encoded within the instruction.
+
+Unlike the `addi` instruction, supporting `jal` requires **both datapath and control unit enhancements**, since the processor must generate a new immediate format, write `PC + 4` back to the register file, and update the Program Counter with the jump target address.
+
+#### Datapath Modifications
+
+Most of the hardware required to execute the `jal` instruction already exists in the datapath. The processor is already capable of:
+
+- Computing `PC + 4`.
+- Adding the Program Counter (`PC`) to a sign-extended immediate.
+- Selecting the computed target address as the next Program Counter (`PCNext`).
+- Writing a value back to the register file.
+
+Therefore, only two modifications are required:
+
+- **Extend Unit Enhancement:** Modify the **Immediate Generator (Extend Unit)** to support the **21-bit J-type immediate** used by the `jal` instruction. The least significant bit (`LSB`) of this immediate is always `0`, while the remaining 20 bits are assembled from the instruction fields (`Instr[31:12]`) before being sign-extended.
+
+- **Result Multiplexer Enhancement:** Expand the **Result Multiplexer** to include `PCPlus4` (`PC + 4`) as an additional input. This allows the processor to write the return address into the destination register `rd`.
+
+#### Control Unit Modifications
+
+The Control Unit must also be updated to support the `jal` instruction.
+
+A new control signal, **`Jump`**, is introduced. This signal is ORed with the existing branch logic to generate the **`PCSrc`** signal.
+
+When:
+
+- `Jump = 1`
+
+the processor selects **`PCTarget`** (the computed jump target address) as the next value of the Program Counter.
+
+This enables unconditional jumps while reusing the existing PC selection hardware.
+
+#### Control Signals for `jal`
+
+A new entry is added to the **Main Decoder** truth table with the following control signal values:
+
+| Control Signal | Value | Description |
+|---------------|:-----:|-------------|
+| `RegWrite` | `1` | Writes the return address (`PC + 4`) into register `rd`. |
+| `ResultSrc` | `10` | Selects `PCPlus4` as the value written back to the register file. |
+| `ImmSrc` | `11` | Selects the 21-bit J-type immediate for sign extension. |
+| `ALUSrc` | `X` | Don't care, since the ALU is not used. |
+| `ALUOp` | `XX` | Don't care, as no ALU operation is required. |
+| `MemWrite` | `0` | No memory write operation is performed. |
+| `Branch` | `0` | The instruction is not a conditional branch. |
+| `Jump` | `1` | Selects the jump target address as the next Program Counter (`PC`). |
+
+With these datapath and controller enhancements, the processor can correctly execute the `jal` instruction by storing the return address in the destination register while simultaneously transferring control to the specified jump target.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-16%20Enhanced%20datapath%20for%20jal.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-i-6 Enhanced datapath for <code>jal</code></em>
+</p>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Table-5%20ImmSrc%20encoding..png" width="1000">
+</p>
+
+<p align="center">
+  <em>Table-5 <code>ImmSrc</code> encoding</em>
+</p>
