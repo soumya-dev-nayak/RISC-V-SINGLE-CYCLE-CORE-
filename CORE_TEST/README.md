@@ -625,3 +625,9 @@ VCD info: dumpfile cpu_top.vcd opened for output.
 <p align="center">
   <em>Figure: PART 8 – Final sorted data memory after successful Insertion Sort execution.</em>
 </p>
+
+---
+
+## Basys-3 FPGA Hardware Demonstration
+
+To validate the design beyond simulation, the complete RISC-V Single-Cycle Core was synthesized, implemented, and deployed on the Digilent Basys-3 FPGA. The following hardware demonstration confirms the successful execution of the signed Insertion Sort program on the physical FPGA, verifying correct instruction execution, data memory updates, control logic, and overall processor functionality in real hardware.
