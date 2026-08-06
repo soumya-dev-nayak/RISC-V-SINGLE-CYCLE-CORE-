@@ -2268,3 +2268,116 @@ As a result, the value originally stored in register `rs2` is written into the m
 
 Unlike the `lw` instruction, the `sw` instruction **does not perform a register write-back**, since its purpose is to update memory rather than the Register File.
 
+## Supporting R-Type Instructions
+
+The datapath developed so far already contains all the hardware required to execute **R-type instructions**.
+
+These instructions:
+
+- Read two source operands from the Register File.
+- Perform an arithmetic or logical operation using the ALU.
+- Write the computed result back to the destination register.
+
+Since all of the necessary datapath connections already exist, **no additional hardware modifications are required** to support R-type instructions. The execution simply involves selecting the appropriate ALU operation and writing the result back to the Register File.
+
+---
+
+## Extending the Datapath for the `beq` Instruction
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-27%20Enhanced%20datapath%20for%20beq%20target%20address%20calculation.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-26 Enhanced datapath for <code>beq</code> target address calculation</em>
+</p>
+
+The **`beq` (Branch if Equal)** instruction compares the contents of two registers and, if they are equal, transfers control to the branch target address.
+
+The branch target address is calculated as:
+
+```text
+PCTarget = PC + ImmExt
+```
+
+where `ImmExt` is the sign-extended **13-bit branch immediate**.
+
+The datapath already includes the ALU hardware required to compare two register values by performing a subtraction. Therefore, no additional comparison hardware is required.
+
+### Step 1: Preserve the Current Program Counter
+
+During the **Instruction Fetch** stage, the Program Counter is immediately updated to `PC + 4`.
+
+However, the `beq` instruction requires the **original Program Counter** to compute the branch target address.
+
+To preserve this value, the current `PC` is stored in a new **non-architectural register** called **`OldPC`** before the Program Counter is updated.
+
+---
+
+### Step 2: Branch Target Address Calculation
+
+The ALU is not required for register comparison during the second execution stage. Therefore, it is reused to calculate the branch target address.
+
+During this stage:
+
+- **`OldPC`** is selected as `SrcA`.
+- **`ImmExt`** is selected as `SrcB`.
+- `ALUControl` is set to `000` to perform an addition.
+
+The ALU computes:
+
+```text
+PCTarget = OldPC + ImmExt
+```
+
+The calculated branch target address is then stored in the **`ALUOut`** register for later use.
+
+---
+
+### Step 3: Register Comparison
+
+In the third execution stage, the ALU compares the two source registers.
+
+The ALU performs:
+
+```text
+RD1 - RD2
+```
+
+If both register values are equal, the ALU asserts the **`Zero`** signal.
+
+When:
+
+- `Zero = 1`
+
+the Control Unit asserts **`PCWrite`**, allowing the Program Counter to be updated.
+
+The **Result Multiplexer** selects the value stored in **`ALUOut`**, which contains the previously computed branch target address, and writes it into the Program Counter.
+
+If the registers are not equal, the Program Counter retains its sequential value (`PC + 4`), and execution continues with the next instruction.
+
+---
+
+## Completed Multicycle Datapath
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-28%20Complete%20Multucycle%20Processor.png" width="1200">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-27 Complete Multicycle Processor</em>
+</p>
+
+With support for **`lw`**, **`sw`**, **R-type instructions**, and **`beq`**, the multicycle datapath is complete.
+
+The overall design methodology closely follows that of the single-cycle processor, where hardware components are systematically connected to execute each instruction. The primary difference is that instruction execution is divided into multiple clock cycles.
+
+To support this multicycle execution:
+
+- **Non-architectural registers** are introduced to store intermediate results between execution stages.
+- A **single unified memory** is shared for both instruction fetches and data accesses.
+- The **ALU** is reused across different stages for address calculation, arithmetic operations, Program Counter updates, and branch target computation.
+
+By reusing hardware resources across multiple execution steps, the multicycle processor significantly reduces hardware cost while maintaining support for the required instruction set.
+
+The next step is to design the **Finite State Machine (FSM)** controller, which generates the appropriate sequence of control signals for each execution stage of every instruction.
