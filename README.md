@@ -25,11 +25,13 @@
 
 This README is the **front door** — every module in this core has its own dedicated write-up under [`/Documentation`](./Documentation), and every link below jumps straight to that file, the way a table of contents in a book takes you straight to a chapter.
 
-And if want to see the **Detailed RISC-V Core Execution** then click on:- [`FPGA Test and Verification`](./CORE_TEST)
+And if you want to see the **detailed RISC-V core execution on real hardware**, click through to [`CORE_TEST`](./CORE_TEST) — it has its own README, board photos, and execution videos.
+
+The Detailed RISC-V Execution Flow and FSM Control of the RISC-V you should check: [`Detailed RISC & FSM Execution Flow`](./RISC-V_Execution_Flow_&_FSM_Documentation)
 
 The documentation is arranged **bottom-up**: we start with the small, foundational building blocks (decoders, the register file, the ALU) and work our way up through the wiring subsystems (PC, fetch stage, datapath) to the fully integrated CPU, its testbench, and finally its FPGA demo shell. Read it in order if you're learning the design for the first time; jump straight to any chapter if you already know what you're looking for.
 
-Every `.v` source file in the repo root has a matching `.md` file in `/Documentation` with the **same name** — if you're staring at `ALU.v` and want the explanation, look for `ALU.md`.
+Every `.v` source file in the repo root has a matching `.md` file in `/Documentation` with the **same name** (a couple of files carry a slightly different `.v`/`.md` spelling — noted inline below — but the mapping is otherwise 1:1). If you're staring at `ALU.v` and want the explanation, look for `ALU.md`.
 
 ### Suggested Reading Paths
 Not everyone landing on this repo wants the same thing, so here are three reasonable ways to work through it depending on what you're after:
@@ -42,14 +44,17 @@ Not everyone landing on this repo wants the same thing, so here are three reason
 
 ## 📂 Repository Structure
 
+This is the actual, current layout of the repo (top two levels shown; see the full `tree` output in the repo itself for the `pics/`, `CORE_TEST/pics/`, and generated-file contents):
+
 ```
-RISC-V-SINGLE-CYCLE-CORE-/
-├── README.md                    ← you are here
-├── Master Constraint.pdf        ← Basys-3 FPGA pin constraints
+RISC-V-SINGLE-CYCLE-CORE/
+├── README.md                                ← you are here
+├── LICENSE
+├── Master Constraint.pdf                    ← Basys-3 FPGA pin constraints
 │
 ├── ── RTL Source (Verilog) ──
 ├── Instruction_Decoder.v
-├── MainDSecoder.v                (Main Control Decoder)
+├── MainDecoder.v                            (Main Control Decoder)
 ├── ALUDecoder.v
 ├── Imm_Gen.v
 ├── Register_Set.v
@@ -65,37 +70,60 @@ RISC-V-SINGLE-CYCLE-CORE-/
 ├── PC_Mux.v
 ├── PC_Top.v
 ├── IF_top.v
-├── ID_EX_MEM_WB_top.v
+├── Datapath.v                               (Decode→Execute→Memory→Writeback core)
 ├── CPU_top.v
-├── CPU_top_tb.v                  (simulation testbench)
-├── CPU_Display_Top.v             (FPGA demo wrapper)
+├── CPU_top_tb.v                             (simulation testbench)
+├── CPU_Display_Top.v                        (FPGA demo wrapper)
 ├── SevenSeg_Display.v
 │
-└── Documentation/
-    ├── ALGORITHMS.md
-    ├── ALU.md
-    ├── ALUDecoder.md
-    ├── ALU_MUX.md
-    ├── CPU_Display_Top.md
-    ├── CPU_top.md
-    ├── CPU_top_tb.md
-    ├── Data_Memory.md
-    ├── Datapath.md
-    ├── IF_top.md
-    ├── Imm_Gen.md
-    ├── Instruction_Decoder.md
-    ├── Instruction_Memory.md
-    ├── MainDecoder.md
-    ├── PC.md
-    ├── PC_MUX.md
-    ├── PC_Plus_4.md
-    ├── PC_Target.md
-    ├── PC_Top.md
-    ├── Register_Set.md
-    ├── SevenSeg_Display.md
-    ├── SrcA_MUX.md
-    └── WriteBack_MUX.md
+├── ── Generated / simulation artifacts ──
+├── a.out                                    (iverilog build output)
+├── cpu_top.vcd                              (waveform dump — open in GTKWave)
+│
+├── Documentation/
+│   ├── ALGORITHMS.md
+│   ├── ALU.md
+│   ├── ALUDecoder.md
+│   ├── ALU_MUX.md
+│   ├── CPU_Display_Top.md
+│   ├── CPU_top.md
+│   ├── CPU_top_tb.md
+│   ├── Data_Memory.md
+│   ├── Datapath.md
+│   ├── IF_top.md
+│   ├── Imm_Gen.md
+│   ├── Instruction_Decoder.md
+│   ├── Instruction_Memory.md
+│   ├── MainDecoder.md
+│   ├── PC.md
+│   ├── PC_MUX.md
+│   ├── PC_Plus_4.md
+│   ├── PC_Target.md
+│   ├── PC_Top.md
+│   ├── Register_Set.md
+│   ├── SevenSeg_Display.md
+│   ├── SrcA_MUX.md
+│   └── WriteBack_MUX.md
+│
+├── CORE_TEST/                                ← real-hardware verification package
+│   ├── README.md
+│   ├── CPU_top.v
+│   ├── CPU_top_tb.v
+│   ├── CPU_Display_Top.v
+│   ├── Basys-3_Testing/
+│   │   ├── Basys-3 Board Initialisation.jpeg
+│   │   ├── Basys-3 Fibonacci Implementation(max range).jpeg
+│   │   ├── Basys-3 FPGA RISC Core(Fibonacci Series) Detailed Execution Video.mp4
+│   │   └── Basys-3 FPGA RISC Core(Fibonacci Series) Short Execution Video.mp4
+│   └── pics/                                 (per-program FPGA output screenshots, PART-1 → PART-8)
+│
+├── RISC-V_Execution_Flow_&_FSM_Documentation/
+│   └── README.md                             (FSM-level walkthrough, multicycle reference diagrams)
+│
+└── pics/                                     (all datapath/FSM/table figures referenced throughout Documentation/)
 ```
+
+> **Naming note for maintainers:** the RTL source file is `PC_Mux.v` (lowercase `ux`) while its documentation chapter is `PC_MUX.md` (uppercase) — this is a legacy casing mismatch from early development that's been left as-is to avoid breaking existing links; functionally they refer to the same module. Similarly, `MainDecoder.v` was previously typo'd as `MainDSecoder.v` in early build commands — the RTL file itself has always been named correctly (`MainDecoder.v`); only the stale build command below has now been corrected to match.
 
 ---
 
@@ -105,7 +133,7 @@ RISC-V-SINGLE-CYCLE-CORE-/
 - Runs entirely **single-cycle** — every instruction fetches, decodes, executes, accesses memory, and writes back within one clock period.
 - Ships with **8 hand-written, hand-traced demo programs** covering signed arithmetic, loops, counting, a software multiply, the Euclidean GCD algorithm, 32-bit-overflow-bounded Fibonacci, and two sorting algorithms — see [`ALGORITHMS.md`](./Documentation/ALGORITHMS.md) for the full breakdown of each.
 - Includes a **self-checking simulation testbench** (`CPU_top_tb.v`) with automatic PASS/FAIL verdicts for every program.
-- Includes a **real FPGA demo path** for the Digilent Basys-3 board, with switch-selectable program values shown live on the 7-segment display.
+- Includes a **real FPGA demo path** for the Digilent Basys-3 board, with switch-selectable program values shown live on the 7-segment display, plus real captured execution photos/videos in [`CORE_TEST`](./CORE_TEST).
 
 ### Instruction Set Support
 | Format | Example Instructions | Handled By |
@@ -124,17 +152,17 @@ The tradeoff, of course, is clock speed: because every instruction must ripple a
 
 ---
 
-## 🧭 Documentation Index 
+## 🧭 Documentation Index
 
 ### Chapter 1 — Instruction Decoding
 The logic that looks at a raw 32-bit instruction word and figures out *what it means* and *what the datapath should do about it*.
 
 | Chapter | File | What it covers |
 |---|---|---|
-| 1.1 | [Instruction_Decoder.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/Instruction_Decoder.md) | Slices the raw instruction into `opcode`, `rd`, `funct3`, `rs1`, `rs2`, `funct7` |
-| 1.2 | [MainDecoder.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/MainDecoder.md) | Opcode → all top-level control signals (`RegWrite`, `ImmSrc`, `ALUSrc`, `Branch`, `Jump`, etc.) |
-| 1.3 | [ALUDecoder.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/ALUDecoder.md) | `ALUop` + `funct3`/`funct7` → the precise 4-bit `ALUControl` code |
-| 1.4 | [Imm_Gen.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/Imm_Gen.md) | Reconstructs the correctly sign-extended immediate for all 5 RISC-V formats |
+| 1.1 | [Instruction_Decoder.md](./Documentation/Instruction_Decoder.md) | Slices the raw instruction into `opcode`, `rd`, `funct3`, `rs1`, `rs2`, `funct7` |
+| 1.2 | [MainDecoder.md](./Documentation/MainDecoder.md) | Opcode → all top-level control signals (`RegWrite`, `ImmSrc`, `ALUSrc`, `Branch`, `Jump`, etc.) |
+| 1.3 | [ALUDecoder.md](./Documentation/ALUDecoder.md) | `ALUop` + `funct3`/`funct7` → the precise 4-bit `ALUControl` code |
+| 1.4 | [Imm_Gen.md](./Documentation/Imm_Gen.md) | Reconstructs the correctly sign-extended immediate for all 5 RISC-V formats |
 
 ### Chapter 2 — Storage Elements
 Where the CPU keeps its state: registers, program instructions, and data.
@@ -158,19 +186,19 @@ Where the CPU keeps its state: registers, program instructions, and data.
 
 | Chapter | File | What it covers |
 |---|---|---|
-| 2.1 | [Register_Set.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/Register_Set.md) | The 32×32-bit register file — dual combinational read, single clocked write, `x0` hardwired to zero |
-| 2.2 | [Instruction_Memory.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/Instruction_Memory.md) | The program ROM, asynchronous read, and the full 8-program test suite |
-| 2.3 | [Data_Memory.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/Data_Memory.md) | The 256-word data RAM, its pre-loaded test arrays, and its addressing scheme |
+| 2.1 | [Register_Set.md](./Documentation/Register_Set.md) | The 32×32-bit register file — dual combinational read, single clocked write, `x0` hardwired to zero |
+| 2.2 | [Instruction_Memory.md](./Documentation/Instruction_Memory.md) | The program ROM, asynchronous read, and the full 8-program test suite |
+| 2.3 | [Data_Memory.md](./Documentation/Data_Memory.md) | The 256-word data RAM, its pre-loaded test arrays, and its addressing scheme |
 
 ### Chapter 3 — Execution Unit
 Where the actual computing happens.
 
 | Chapter | File | What it covers |
 |---|---|---|
-| 3.1 | [ALU.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/ALU.md) | The full arithmetic/logic/shift/compare unit — every `con` code explained |
-| 3.2 | [SrcA_MUX.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/SrcA_MUX.md) | Selects ALU operand A: `rs1` normally, or `PC` for `AUIPC` |
-| 3.3 | [ALU_MUX.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/ALU_MUX.md) | Selects ALU operand B: `rs2` or the decoded immediate |
-| 3.4 | [WriteBack_MUX.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/WriteBack_MUX.md) | Selects what gets written back to the register file: ALU result, memory data, or `PC+4` |
+| 3.1 | [ALU.md](./Documentation/ALU.md) | The full arithmetic/logic/shift/compare unit — every `con` code explained |
+| 3.2 | [SrcA_MUX.md](./Documentation/SrcA_MUX.md) | Selects ALU operand A: `rs1` normally, or `PC` for `AUIPC` |
+| 3.3 | [ALU_MUX.md](./Documentation/ALU_MUX.md) | Selects ALU operand B: `rs2` or the decoded immediate |
+| 3.4 | [WriteBack_MUX.md](./Documentation/WriteBack_MUX.md) | Selects what gets written back to the register file: ALU result, memory data, or `PC+4` |
 
 ### Chapter 4 — Program Counter Subsystem
 How the CPU decides which instruction to fetch next — sequential, branch/JAL, or JALR.
@@ -186,27 +214,27 @@ How the CPU decides which instruction to fetch next — sequential, branch/JAL, 
 
 | Chapter | File | What it covers |
 |---|---|---|
-| 4.1 | [PC.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/PC.md) | The clocked program counter register itself |
-| 4.2 | [PC_Plus_4.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/PC_Plus_4.md) | Computes the default sequential next address (`PC + 4`) |
-| 4.3 | [PC_Target.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/PC_Target.md) | Computes the PC-relative branch/JAL target (`PC + Imm`) |
-| 4.4 | [PC_MUX.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/PC_MUX.md) | The 3:1 mux that picks the next PC — and the JAL/JALR bug fix that made this a 3-way (not 2-way) decision |
-| 4.5 | [PC_Top.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/PC_Top.md) | The structural wrapper tying 4.1–4.4 together into one PC subsystem |
+| 4.1 | [PC.md](./Documentation/PC.md) | The clocked program counter register itself |
+| 4.2 | [PC_Plus_4.md](./Documentation/PC_Plus_4.md) | Computes the default sequential next address (`PC + 4`) |
+| 4.3 | [PC_Target.md](./Documentation/PC_Target.md) | Computes the PC-relative branch/JAL target (`PC + Imm`) |
+| 4.4 | [PC_MUX.md](./Documentation/PC_MUX.md) | The 3:1 mux that picks the next PC (RTL file: `PC_Mux.v`) — and the JAL/JALR bug fix that made this a 3-way (not 2-way) decision |
+| 4.5 | [PC_Top.md](./Documentation/PC_Top.md) | The structural wrapper tying 4.1–4.4 together into one PC subsystem |
 
 ### Chapter 5 — Stage Integration
 Where the individual pieces above get wired into full pipeline **stages** (still single-cycle — no pipeline registers, just logical grouping).
 
 | Chapter | File | What it covers |
 |---|---|---|
-| 5.1 | [IF_top.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/IF_top.md) | The Instruction Fetch stage — pairs the PC subsystem with instruction memory |
-| 5.2 | [Datapath.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/Datapath.md) | The Decode → Execute → Memory → Writeback core — decoders, register file, ALU, data memory, and writeback all wired together |
-| 5.3 | [CPU_top.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/CPU_top.md) | The top-level module — joins fetch + core, and hosts the branch-condition decoder and final `pc_sel` logic |
+| 5.1 | [IF_top.md](./Documentation/IF_top.md) | The Instruction Fetch stage — pairs the PC subsystem with instruction memory |
+| 5.2 | [Datapath.md](./Documentation/Datapath.md) | The Decode → Execute → Memory → Writeback core — decoders, register file, ALU, data memory, and writeback all wired together |
+| 5.3 | [CPU_top.md](./Documentation/CPU_top.md) | The top-level module — joins fetch + core, and hosts the branch-condition decoder and final `pc_sel` logic |
 
 ### Chapter 6 — Verification
 How we prove the CPU actually works.
 
 | Chapter | File | What it covers |
 |---|---|---|
-| 6.1 | [CPU_top_tb.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/CPU_top_tb.md) | The testbench — cycle monitor, per-program PASS/FAIL checks, and the exact `iverilog` build command |
+| 6.1 | [CPU_top_tb.md](./Documentation/CPU_top_tb.md) | The testbench — cycle monitor, per-program PASS/FAIL checks, and the exact `iverilog` build command |
 
 ### Chapter 7 — FPGA Deployment
 Taking the core off the simulator and onto real silicon (Basys-3).
@@ -216,22 +244,29 @@ Taking the core off the simulator and onto real silicon (Basys-3).
 </p>
 
 <p align="center">
-  <em>Figure: Basys-3 FPGA Implementation </em>
+  <em>Figure: Basys-3 FPGA Implementation</em>
 </p>
 
 | Chapter | File | What it covers |
 |---|---|---|
-| 7.1 | [CPU_Display_Top.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/CPU_Display_Top.md) | The synthesizable top module — clock-enable (not gated-clock) speed control, switch decoding, and the `CPU_Tapped`/`IF_top_CE` clock-enabled CPU variant |
-| 7.2 | [SevenSeg_Display.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/SevenSeg_Display.md) | The general-purpose 4-digit 7-segment scanning/hex-decoding driver |
+| 7.1 | [CPU_Display_Top.md](./Documentation/CPU_Display_Top.md) | The synthesizable top module — clock-enable (not gated-clock) speed control, switch decoding, and the `CPU_Tapped`/`IF_top_CE` clock-enabled CPU variant |
+| 7.2 | [SevenSeg_Display.md](./Documentation/SevenSeg_Display.md) | The general-purpose 4-digit 7-segment scanning/hex-decoding driver |
 
-Pin assignments for the board (clock, switches, segments, anodes) live in **`Master Constraint.pdf`** at the repo root.
+Pin assignments for the board (clock, switches, segments, anodes) live in **`Master Constraint.pdf`** at the repo root. Real captured board photos and execution-recording videos live in **[`CORE_TEST/Basys-3_Testing`](./CORE_TEST/Basys-3_Testing)**, and per-program FPGA display screenshots (PART-1 through PART-8) live in **[`CORE_TEST/pics`](./CORE_TEST/pics)**.
 
 ### Chapter 8 — Algorithms & Test Programs
 *Prefer to start here?* This chapter needs no Verilog background — it's a plain-English, classroom-friendly walkthrough of all 8 demo programs, cross-verified line-by-line against the real machine code and the real testbench pass conditions.
 
 | Chapter | File | What it covers |
 |---|---|---|
-| 8.1 | [ALGORITHMS.md](https://github.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE-/blob/main/Documentation/ALGORITHMS.md) | ALU + negatives, array sum, count negatives, factorial, GCD, Fibonacci (32-bit overflow), bubble sort, insertion sort — pseudocode, register maps, hand-traced walkthroughs, and exact memory addresses/cycle counts for each |
+| 8.1 | [ALGORITHMS.md](./Documentation/ALGORITHMS.md) | ALU + negatives, array sum, count negatives, factorial, GCD, Fibonacci (32-bit overflow), bubble sort, insertion sort — pseudocode, register maps, hand-traced walkthroughs, and exact memory addresses/cycle counts for each |
+
+### Appendix — FSM & Multicycle Reference
+For readers who want to see how this single-cycle design's control logic maps onto the classic multicycle FSM formulation (a common companion topic in textbook treatments of RISC-V datapaths):
+
+| File | What it covers |
+|---|---|
+| [`RISC-V_Execution_Flow_&_FSM_Documentation/README.md`](./RISC-V_Execution_Flow_%26_FSM_Documentation/README.md) | FSM state diagrams (Fetch, Decode, MemAdr, MemRead/MemWB, ExecuteR/ALUWB, BEQ, JAL, etc.) and the full multicycle control unit reference, cross-linked to the `Fig-*`/`FSM-*` figures in `/pics` |
 
 ---
 
@@ -242,9 +277,9 @@ Pin assignments for the board (clock, switches, segments, anodes) live in **`Mas
 3. Compile and run with Icarus Verilog:
    ```bash
    iverilog -o sim ALU.v ALUDecoder.v ALU_MUX.v SrcA_MUX.v \
-     CPU_top.v CPU_top_tb.v Data_Memory.v ID_EX_MEM_WB_top.v \
+     CPU_top.v CPU_top_tb.v Data_Memory.v Datapath.v \
      IF_top.v Imm_Gen.v Instruction_Decoder.v \
-     Instruction_Memory.v MainDSecoder.v PC.v PC_Mux.v \
+     Instruction_Memory.v MainDecoder.v PC.v PC_Mux.v \
      PC_Plus_4.v PC_Target.v PC_Top.v Register_Set.v \
      WriteBack_MUX.v && vvp sim
    ```
@@ -257,6 +292,7 @@ Full details on what each program checks and why: [`CPU_top_tb.md`](./Documentat
 1. Set `` `define PROGRAM_ID `` at the top of [`CPU_Display_Top.v`](./CPU_Display_Top.v) to match whichever `PART` is active in `Instruction_Memory.v`.
 2. Synthesize with `CPU_Display_Top` as the top module, using the pin constraints in `Master Constraint.pdf`.
 3. Program the bitstream, then use the on-board switches to control reset, speed, and which value is shown.
+4. For a working reference of what a correct run looks like on real hardware, see the photos and videos in [`CORE_TEST/Basys-3_Testing`](./CORE_TEST/Basys-3_Testing).
 
 Full switch map and per-program display details: [`CPU_Display_Top.md`](./Documentation/CPU_Display_Top.md).
 
@@ -282,7 +318,7 @@ This core evolved through several rounds of bug-fixing that are worth knowing ab
 
 - **`AUIPC` computing `rs1 + imm` instead of `PC + imm`** — fixed by adding `SrcA_MUX` ([details](./Documentation/SrcA_MUX.md)).
 - **`LUI`/`AUIPC` immediates silently computing as zero** — fixed by expanding `ImmSrc` from 2 bits to 3 bits to add U-type support ([details](./Documentation/Imm_Gen.md), [details](./Documentation/MainDecoder.md)).
-- **`JAL`/`JALR` not actually redirecting the PC** — fixed by expanding the PC mux from a single `branch` bit to a 2-bit `pc_sel` ([details](./Documentation/PC_MUX.md), [details](./Documentation/CPU_top.md)).
+- **`JAL`/`JALR` not actually redirecting the PC** — fixed by expanding the PC mux from a single `branch` bit to a 2-bit `pc_sel` ([details](./Documentation/PC_MUX.md), [details](./Documentation/PC_Top.md), [details](./Documentation/CPU_top.md)).
 - **`JAL`/`JALR` link address hardwired to `0`** — fixed by forwarding the real `PC+4` into the writeback mux ([details](./Documentation/WriteBack_MUX.md)).
 - **Branch targets off by 4 bytes** — fixed by making instruction memory read asynchronously instead of on the clock edge ([details](./Documentation/Instruction_Memory.md), [details](./Documentation/IF_top.md)).
 
@@ -291,6 +327,9 @@ This core evolved through several rounds of bug-fixing that are worth knowing ab
 ## 📌 Notes for Maintainers
 - `Instruction_Memory.v` and `CPU_top_tb.v` must always have the **same** `PART` uncommented — they are not automatically synchronized.
 - `CPU_Display_Top.v`'s `` `PROGRAM_ID `` macro must match that same `PART` for the FPGA display to show meaningful values.
+- The RTL source filename is `PC_Mux.v`, not `PC_MUX.v` — the documentation chapter is titled `PC_MUX.md` for readability, but the two names refer to the same module.
+- `CORE_TEST/` carries its own copies of `CPU_top.v`, `CPU_top_tb.v`, and `CPU_Display_Top.v` alongside the FPGA verification media — these are the exact versions that were synthesized and run on the Basys-3 board for the photos/videos in that folder. If you change the root-level RTL, remember `CORE_TEST`'s copies won't update automatically.
+- `a.out` and `cpu_top.vcd` in the repo root are simulation build artifacts (from the `iverilog`/`vvp` commands above) — safe to delete/regenerate at any time; not hand-maintained source.
 
 ---
 
