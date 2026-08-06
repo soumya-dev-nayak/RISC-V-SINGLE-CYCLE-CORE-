@@ -25,6 +25,8 @@
 
 This README is the **front door** — every module in this core has its own dedicated write-up under [`/Documentation`](./Documentation), and every link below jumps straight to that file, the way a table of contents in a book takes you straight to a chapter.
 
+And if want to see the **Detailed RISC-V Core Execution** then click on:- [`FPGA Test and Verification`](./CORE_TEST)
+
 The documentation is arranged **bottom-up**: we start with the small, foundational building blocks (decoders, the register file, the ALU) and work our way up through the wiring subsystems (PC, fetch stage, datapath) to the fully integrated CPU, its testbench, and finally its FPGA demo shell. Read it in order if you're learning the design for the first time; jump straight to any chapter if you already know what you're looking for.
 
 Every `.v` source file in the repo root has a matching `.md` file in `/Documentation` with the **same name** — if you're staring at `ALU.v` and want the explanation, look for `ALU.md`.
