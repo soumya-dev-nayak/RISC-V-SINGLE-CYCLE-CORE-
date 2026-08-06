@@ -209,7 +209,13 @@ How we prove the CPU actually works.
 ### Chapter 7 — FPGA Deployment
 Taking the core off the simulator and onto real silicon (Basys-3).
 
-> 🖼️ **[INSERT IMAGE HERE — Basys-3 Board Photo / Switch & 7-Segment Layout Diagram]**
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/Basys-3_Testing/Basys-3%20Fibonacci%20Implementation(max%20range).jpeg" width="1050">
+</p>
+
+<p align="center">
+  <em>Figure: Basys-3 FPGA Implementation </em>
+</p>
 
 | Chapter | File | What it covers |
 |---|---|---|
@@ -283,7 +289,6 @@ This core evolved through several rounds of bug-fixing that are worth knowing ab
 ## 📌 Notes for Maintainers
 - `Instruction_Memory.v` and `CPU_top_tb.v` must always have the **same** `PART` uncommented — they are not automatically synchronized.
 - `CPU_Display_Top.v`'s `` `PROGRAM_ID `` macro must match that same `PART` for the FPGA display to show meaningful values.
-- Image placeholders throughout this README are marked `INSERT IMAGE HERE` — search for that phrase to find every spot still waiting on a diagram or board photo.
 
 ---
 
