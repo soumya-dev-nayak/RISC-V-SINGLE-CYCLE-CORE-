@@ -1921,3 +1921,271 @@ Therefore, the program requires **75 seconds** to execute on the single-cycle pr
   <em>Table-7 Delay of circuit elements</em>
 </p>
 
+# Multicycle Processor
+
+The **single-cycle processor** provides a simple and straightforward implementation of the RISC-V architecture. However, this simplicity comes with several limitations that reduce its overall efficiency and increase hardware cost.
+
+## Limitations of the Single-Cycle Processor
+
+The single-cycle design has three major drawbacks:
+
+- **Separate Instruction and Data Memories:** The processor requires independent memories for instructions and data, whereas most practical systems use a **single unified memory** to store both.
+
+- **Long Clock Cycle:** Every instruction must complete within a single clock cycle. Consequently, the clock period is determined by the **slowest instruction** (`lw`), forcing simpler instructions to wait unnecessarily even though they could finish much sooner.
+
+- **Higher Hardware Cost:** The datapath requires **three separate adders**—one inside the **ALU** and two dedicated to **Program Counter (PC)** calculations. Since fast adders are relatively expensive hardware components, this increases the overall implementation cost.
+
+## Motivation for a Multicycle Processor
+
+The **multicycle processor** overcomes these limitations by dividing the execution of each instruction into **multiple shorter steps** rather than completing the entire instruction in a single clock cycle.
+
+Instead of performing every operation simultaneously, hardware resources are **reused across multiple clock cycles**. This approach significantly reduces hardware requirements while allowing each clock cycle to be much shorter.
+
+Since the **memory**, **ALU**, and **Register File** contribute the largest propagation delays, the multicycle processor is designed so that **only one of these major functional units is used during each execution step**. This helps keep the duration of every clock cycle approximately equal.
+
+As a result:
+
+- A **single memory** can be shared for both instruction fetches and data accesses, since these operations occur during different clock cycles.
+- A **single ALU** can be reused for arithmetic operations, address calculations, branch target computation, and Program Counter updates.
+- Only **one adder** is required, eliminating the additional dedicated PC adders used in the single-cycle implementation.
+
+## Variable Instruction Execution Time
+
+Unlike the single-cycle processor, different instructions require **different numbers of execution steps**.
+
+- **Simple instructions** complete in fewer clock cycles.
+- **More complex instructions**, such as memory accesses, require additional execution steps.
+
+This allows simpler instructions to finish sooner instead of waiting for the worst-case execution time of more complex instructions.
+
+## Design Methodology
+
+The multicycle processor is developed using the same overall design methodology as the single-cycle processor.
+
+The design process consists of the following stages:
+
+1. **Datapath Design**
+   - Connect the architectural state elements and memory using combinational logic.
+   - Introduce additional **non-architectural state elements** to temporarily store intermediate values between execution steps.
+
+2. **Controller Design**
+   - Since the control signals change during each step of instruction execution, the controller is implemented as a **Finite State Machine (FSM)** rather than simple combinational logic.
+
+3. **Performance Analysis**
+   - Evaluate the performance of the multicycle processor.
+   - Compare its execution characteristics, hardware utilization, and efficiency with those of the single-cycle processor.
+
+ ## Multicycle Datapath
+
+As with the single-cycle processor, the design of the multicycle processor begins with the **architectural state elements** and the processor memory. These state elements form the foundation of the datapath and are gradually connected with combinational logic to support the execution of every instruction.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-19%20State%20Elements%20with%20unified%20instruction_%26Data%20memory.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-17 State elements with unified Instruction &amp; Data Memory</em>
+</p>
+
+A significant difference from the single-cycle design is the organization of memory. Instead of using **separate instruction and data memories**, the multicycle processor employs a **single unified memory** for storing both instructions and data.
+
+This approach is possible because instruction fetch and data access occur in **different clock cycles**, allowing the same memory hardware to be reused without conflicts. Consequently, the processor no longer requires two independent memory blocks, making the design more practical and reducing hardware cost.
+
+The **Program Counter (`PC`)** and the **Register File** remain unchanged from the single-cycle implementation and continue to represent the architectural state of the processor.
+
+## Instruction Fetch
+
+The execution of every instruction begins with the **Instruction Fetch (IF)** stage.
+
+During this stage:
+
+1. The **Program Counter (`PC`)** supplies the address of the instruction to be executed.
+2. This address is connected directly to the address input of the unified memory.
+3. The memory reads the instruction stored at that address.
+4. Instead of being used immediately, the fetched instruction is stored in a new **non-architectural register** called the **Instruction Register (`IR`)**.
+
+The **Instruction Register (`IR`)** preserves the fetched instruction for subsequent execution stages, allowing the unified memory to be reused later for data accesses while the processor continues decoding and executing the current instruction.
+
+To control when a new instruction is loaded, the `IR` includes a dedicated **write enable** signal:
+
+- **`IRWrite`** – When asserted, the fetched instruction from memory is loaded into the Instruction Register (`IR`). When deasserted, the current instruction stored in the `IR` is retained for the remaining execution cycles.
+
+
+## Datapath for the `lw` Instruction
+
+As with the single-cycle processor, the **`lw` (Load Word)** instruction is used as the starting point for constructing the multicycle datapath. Rather than completing the entire instruction in a single clock cycle, the multicycle processor divides its execution into several sequential stages, each performing a specific task.
+
+### Step 1: Instruction Fetch
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-20%20Fetch%20instruction%20from%20memory_multicycle.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-19 Fetch instruction from memory (Multicycle)</em>
+</p>
+
+The execution begins by fetching the instruction from the unified memory.
+
+- The **Program Counter (`PC`)** provides the instruction address.
+- The unified memory reads the instruction stored at that address.
+- The fetched instruction is loaded into the **Instruction Register (`IR`)** when the `IRWrite` signal is asserted.
+- During this same clock cycle, the processor also computes **`PC + 4`** using the ALU, preparing the address of the next sequential instruction.
+
+---
+
+### Step 2: Register Read and Immediate Generation
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-21%20Read%20one%20source%20from%20register%20file%20and%20extend%20second%20source%20%20from%20imediate%20field.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-20 Read one source from Register File and extend second source from immediate field</em>
+</p>
+
+After the instruction has been fetched, the processor decodes the required operands.
+
+The source register is specified by the **`rs1`** field (`Instr[19:15]`), which is connected to the **`A1`** input of the Register File.
+
+During this stage:
+
+- The Register File reads the contents of register `rs1`.
+- The output (`RD1`) is stored in a new **non-architectural register** called **`A`**.
+- The instruction's **12-bit immediate** (`Instr[31:20]`) is sign-extended by the **Immediate Generator (Extend Unit)** to produce **`ImmExt`**.
+
+As in the single-cycle processor, the Extend Unit uses the **`ImmSrc`** control signal to determine whether the instruction contains a:
+
+- 12-bit immediate
+- 13-bit immediate
+- 21-bit immediate
+
+Although `ImmExt` is used across multiple execution stages, it is **not stored in a separate register**. Since it is generated directly from the instruction stored in the `IR`, its value remains constant throughout the execution of the current instruction.
+
+---
+
+### Step 3: Effective Address Calculation
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-22%20Add%20base%20address%20to%20offset.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-21 Add base address to offset</em>
+</p>
+
+The effective memory address is obtained by adding the base address from register `rs1` to the sign-extended immediate.
+
+During this stage:
+
+- The ALU receives:
+  - `A` as the first operand.
+  - `ImmExt` as the second operand.
+- `ALUControl` is set to `000` to perform an addition.
+- The computed address is stored in another **non-architectural register** called **`ALUOut`**.
+
+This register preserves the calculated address for the subsequent memory access stage.
+
+---
+
+### Step 4: Data Memory Access
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-23%20Load%20data%20from%20memory.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-22 Load data from memory</em>
+</p>
+
+Once the effective address has been computed, the processor accesses the unified memory to read the required data.
+
+To allow the same memory to be used for both instruction fetches and data accesses, an **Address Multiplexer** is placed before the memory.
+
+The memory address (`Adr`) is selected from:
+
+- `PC` during the **Instruction Fetch** stage.
+- `ALUOut` during the **Data Memory Access** stage.
+
+This selection is controlled by the **`AdrSrc`** signal.
+
+The data read from memory is then stored in another **non-architectural register** called **`Data`**.
+
+The addition of the Address Multiplexer enables the unified memory to be reused efficiently during different stages of instruction execution. Consequently, the value of `AdrSrc` changes across different clock cycles under the control of the processor's **Finite State Machine (FSM)**.
+
+---
+
+### Step 5: Write Back
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-24%20Write%20data%20back%20to%20register%20file.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-23 Write data back to Register File</em>
+</p>
+
+In the final stage, the loaded data is written back to the destination register.
+
+The destination register is specified by the **`rd`** field (`Instr[11:7]`).
+
+Instead of connecting the **`Data`** register directly to the Register File, a **Result Multiplexer** is introduced. This multiplexer selects the value to be written back from either:
+
+- `ALUOut`
+- `Data`
+
+The selected value appears on the **`Result`** bus and is connected to the Register File write-data input (`WD3`).
+
+This additional multiplexer makes the datapath more flexible, allowing future instructions to write either an ALU result or memory data back to the Register File using the same write-back path.
+
+During this stage:
+
+- `RegWrite = 1`
+
+allowing the selected result to be written into the destination register.
+
+---
+
+### Program Counter Update
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-25%20Increment%20PC%20by%204.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-24 Increment Program Counter (<code>PC</code>) by 4</em>
+</p>
+
+While the `lw` instruction progresses through its execution stages, the processor must also update the **Program Counter (`PC`)** to point to the next instruction.
+
+Unlike the single-cycle processor, which requires a dedicated adder for this purpose, the multicycle processor **reuses the existing ALU** during the **Instruction Fetch** stage because it is otherwise idle.
+
+To support this reuse, two additional multiplexers are introduced at the ALU inputs.
+
+The first multiplexer (**`ALUSrcA`**) selects between:
+
+- `PC`
+- Register `A`
+
+The second multiplexer selects between:
+
+- Constant `4`
+- `ImmExt`
+- Additional inputs required by other instructions
+
+During instruction fetch:
+
+- `SrcA = PC`
+- `SrcB = 4`
+
+The ALU computes:
+
+```text
+PC + 4
+```
+
+The computed value is selected by the **Result Multiplexer** and written back into the **Program Counter**.
+
+The **`PCWrite`** control signal enables the Program Counter to be updated only during the appropriate execution cycles.
+
+With these additions, the multicycle datapath fully supports the execution of the **`lw`** instruction while efficiently reusing hardware resources across multiple clock cycles.
