@@ -558,3 +558,73 @@ VCD info: dumpfile cpu_top.vcd opened for output.
 <p align="center">
   <em>Figure: PART 7 – Bubble Sort Execution and Successful Array Sorting Process op3</em>
 </p>
+
+## PART 8 : INSERTION SORT (SIGNED)
+
+### Console Output
+
+```text
+VCD info: dumpfile cpu_top.vcd opened for output.
+
+================================================
+  PART 8 : INSERTION SORT  (signed)
+  Input:  mem[0..4] = {-5, 12, -3, 8, -1}
+  [cyc####] PC=0xXXXX  instr=0xXXXXXXXX  x5=i  x6=j  x8=curr  x10=N
+================================================
+  [cyc   3] PC=0x00000000  instr=0x00100293  x5=0 x6=0 x8=0 x10=0
+  [cyc   4] PC=0x00000004  instr=0x00500513  x5=1 x6=0 x8=0 x10=0
+  [cyc   5] PC=0x00000008  instr=0x00400e13  x5=1 x6=0 x8=0 x10=5
+  [cyc   6] PC=0x0000000c  instr=0x04a2d063  x5=1 x6=0 x8=0 x10=5
+  [cyc   7] PC=0x00000010  instr=0x00229593  x5=1 x6=0 x8=0 x10=5
+  [cyc   8] PC=0x00000014  instr=0x0005a383  x5=1 x6=0 x8=0 x10=5
+  [cyc   9] PC=0x00000018  instr=0xfff28313  x5=1 x6=0 x8=0 x10=5
+  [cyc  10] PC=0x0000001c  instr=0x00231493  x5=1 x6=0 x8=0 x10=5
+  [cyc  11] PC=0x00000020  instr=0x00034663  x5=1 x6=0 x8=0 x10=5
+  [cyc  12] PC=0x00000024  instr=0x0004a403  x5=1 x6=0 x8=0 x10=5
+  [cyc  13] PC=0x00000028  instr=0x0083ca63  x5=1 x6=0 x8=-5 x10=5
+  [cyc  14] PC=0x0000002c  instr=0x00448493  x5=1 x6=0 x8=-5 x10=5
+  [cyc  15] PC=0x00000030  instr=0x0074a023  x5=1 x6=0 x8=-5 x10=5
+  [cyc  16] PC=0x00000034  instr=0x00128293  x5=1 x6=0 x8=-5 x10=5
+  [cyc  17] PC=0x00000038  instr=0xfd5ff06f  x5=2 x6=0 x8=-5 x10=5
+  [cyc  18] PC=0x0000000c  instr=0x04a2d063  x5=2 x6=0 x8=-5 x10=5
+  [cyc  19] PC=0x00000010  instr=0x00229593  x5=2 x6=0 x8=-5 x10=5
+  [cyc  20] PC=0x00000014  instr=0x0005a383  x5=2 x6=0 x8=-5 x10=5
+  [cyc  21] PC=0x00000018  instr=0xfff28313  x5=2 x6=0 x8=-5 x10=5
+  [cyc  22] PC=0x0000001c  instr=0x00231493  x5=2 x6=1 x8=-5 x10=5
+  ...
+
+================================================
+  RESULT  (Data Memory after sort):
+  mem[0] =   -5  (expect -5)
+  mem[1] =   -3  (expect -3)
+  mem[2] =   -1  (expect -1)
+  mem[3] =    8  (expect  8)
+  mem[4] =   12  (expect 12)
+  Total cycles executed: 202
+------------------------------------------------
+  >>> PASS: Array sorted correctly {-5,-3,-1,8,12} <<<
+================================================
+```
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-8%20INSERTION%20SORT%20op2.png" width="1350">
+</p>
+
+<p align="center">
+  <em>Figure: PART 8 – GTKWave timing diagram showing insertion sort execution op1.</em>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-8%20INSERTION%20SORT%20op3.png" width="1350">
+</p>
+
+<p align="center">
+  <em>Figure: PART 8 – GTKWave timing diagram showing insertion sort execution op2.</em>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/CORE_TEST/pics/PART-8%20INSERTION%20SORT%20op1.png" width="1350">
+</p>
+
+<p align="center">
+  <em>Figure: PART 8 – Final sorted data memory after successful Insertion Sort execution.</em>
+</p>
