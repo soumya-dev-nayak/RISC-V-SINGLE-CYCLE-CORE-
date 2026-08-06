@@ -919,3 +919,114 @@ At the rising edge of the clock, the Program Counter is updated with this new ad
 </p>
 
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-9%20Increment%20program%20counter.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-8 Increment program counter</em>
+</p>
+
+## Execution Flow of the `sw` Instruction
+
+The **`sw` (Store Word)** instruction is an **S-type** instruction that stores a 32-bit word from a register into Data Memory. Similar to the `lw` instruction, it computes the effective memory address by adding a base register value to a signed immediate offset. However, instead of reading data from memory, it writes data into memory.
+
+The execution of the `sw` instruction proceeds through the following steps.
+
+### Step 1: Read the Base Register
+
+The base address is specified by the **`rs1`** field (`Instr[19:15]`).
+
+These bits are connected to the **`A1`** input of the Register File, causing the contents of the selected register to appear on output **`RD1`**.
+
+This value serves as the base address for the memory write operation.
+
+### Step 2: Generate the Immediate Offset
+
+Unlike the `lw` instruction, the **`sw`** instruction stores its **12-bit signed immediate** in two separate fields:
+
+- `Instr[31:25]`
+- `Instr[11:7]`
+
+The **Immediate Extension (`Extend`)** unit combines these two fields and performs sign extension to produce a 32-bit immediate value.
+
+To support multiple instruction formats, the Extend unit receives the complete **`Instr[31:7]`** field. A control signal called **`ImmSrc`** determines how the immediate is extracted.
+
+- **`ImmSrc = 0`** → I-type immediate (`lw`)
+- **`ImmSrc = 1`** → S-type immediate (`sw`)
+
+The selected immediate is then sign-extended to 32 bits before being forwarded to the ALU.
+
+### Step 3: Calculate the Effective Address
+
+The **Arithmetic Logic Unit (ALU)** calculates the effective memory address by adding:
+
+- **`SrcA`** = Base address from the Register File (`RD1`)
+- **`SrcB`** = Sign-extended immediate (`ImmExt`)
+
+For the `sw` instruction,
+
+```text
+ALUControl = 000
+```
+
+which configures the ALU to perform an addition.
+
+The resulting address (`ALUResult`) represents the Data Memory location where the word will be stored.
+
+### Step 4: Read the Source Data
+
+Unlike `lw`, which reads data from memory, the `sw` instruction must obtain the data to be written from a second register.
+
+The register specified by the **`rs2`** field (`Instr[24:20]`) is connected to the **`A2`** input of the Register File.
+
+Its contents appear on output **`RD2`**, which is connected directly to the **Write Data (`WD`)** input of the Data Memory.
+
+Thus,
+
+- `rs1` provides the base address.
+- `rs2` provides the data that will be stored in memory.
+
+### Step 5: Write Data to Memory
+
+The ALU output (`ALUResult`) is connected to the address input of the Data Memory.
+
+The value from **`RD2`** is supplied to the Data Memory write-data input.
+
+A control signal called **`MemWrite`** determines whether the memory performs a write operation.
+
+For the `sw` instruction:
+
+```text
+MemWrite = 1
+```
+
+At the rising edge of the clock, the value from `RD2` is written into the memory location specified by `ALUResult`.
+
+Although the Data Memory continues to produce a value on its `ReadData` output, this value is ignored because the processor is performing a write operation.
+
+### Step 6: Register File Remains Unchanged
+
+Unlike the `lw` instruction, the `sw` instruction does **not** write any value back into the Register File.
+
+Therefore,
+
+```text
+RegWrite = 0
+```
+
+No register is updated during the execution of a store instruction.
+
+### Summary of `sw` Execution
+
+| Stage | Operation |
+|--------|-----------|
+| Instruction Fetch | Fetch the `sw` instruction from Instruction Memory |
+| Register Read | Read base register (`rs1`) and source register (`rs2`) |
+| Immediate Generation | Extract and sign-extend the S-type immediate |
+| ALU Execution | Compute effective memory address (`Base + Offset`) |
+| Memory Access | Write the contents of `rs2` into Data Memory |
+| Write Back | No register write (`RegWrite = 0`) |
+| PC Update | Increment `PC` to the next instruction (`PC + 4`) |
+
+<p align="center"> <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-10%20Write%20data%20to%20memory%20for%20sw%20instruction.png" width="1000"> </p> <p align="center"> <em>Figure: Fig-10 Write data to memory for sw instruction</em> </p>
