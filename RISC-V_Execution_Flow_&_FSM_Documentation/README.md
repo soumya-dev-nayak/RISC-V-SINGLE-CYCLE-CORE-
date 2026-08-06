@@ -2189,3 +2189,82 @@ The computed value is selected by the **Result Multiplexer** and written back in
 The **`PCWrite`** control signal enables the Program Counter to be updated only during the appropriate execution cycles.
 
 With these additions, the multicycle datapath fully supports the execution of the **`lw`** instruction while efficiently reusing hardware resources across multiple clock cycles.
+
+
+## Extending the Datapath for the `sw` Instruction
+
+The **`sw` (Store Word)** instruction shares much of its execution flow with the **`lw`** instruction. Both instructions compute the effective memory address in the same manner by adding a base address to a sign-extended immediate. However, instead of reading data from memory, the `sw` instruction writes data from the Register File into memory.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-26%20Enhanced%20datapath%20for%20sw%20instruction.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-25 Enhanced datapath for <code>sw</code> instruction</em>
+</p>
+
+### Step 1: Instruction Fetch
+
+The processor begins by fetching the `sw` instruction from the unified memory and storing it in the **Instruction Register (`IR`)**. During the same clock cycle, the ALU computes `PC + 4`, preparing the address of the next sequential instruction.
+
+---
+
+### Step 2: Register Read and Immediate Generation
+
+During the second execution stage, the processor reads both source registers from the Register File.
+
+- The **`rs1`** field (`Instr[19:15]`) provides the **base address**.
+- The **`rs2`** field (`Instr[24:20]`) specifies the register containing the data to be stored.
+
+The Register File outputs:
+
+- `RD1` → Stored in the **`A`** register.
+- `RD2` → Stored in a new **non-architectural register** called **`WriteData`**.
+
+At the same time, the **Immediate Generator (Extend Unit)** sign-extends the instruction's immediate field to produce **`ImmExt`**.
+
+The `WriteData` register temporarily stores the value that will later be written into memory.
+
+---
+
+### Step 3: Effective Address Calculation
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-27%20Enhanced%20datapath%20for%20beq%20target%20address%20calculation.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-26 Enhanced datapath for <code>beq</code> target address calculation</em>
+</p>
+
+The processor computes the effective memory address using the ALU.
+
+The ALU performs:
+
+```text
+Effective Address = Base Address + ImmExt
+```
+
+where:
+
+- Base Address is obtained from register **`A`**.
+- `ImmExt` is the sign-extended immediate.
+
+The resulting address is stored in the **`ALUOut`** register for use during the memory access stage.
+
+---
+
+### Step 4: Store Data to Memory
+
+In the final execution stage, the processor writes the data stored in the **`WriteData`** register into memory.
+
+During this stage:
+
+- The **Address Multiplexer** selects **`ALUOut`** as the memory address.
+- The contents of the **`WriteData`** register are connected to the memory write-data input (`WD`).
+- The **`MemWrite`** control signal is asserted, enabling the memory write operation.
+
+As a result, the value originally stored in register `rs2` is written into the memory location computed during the previous stage.
+
+Unlike the `lw` instruction, the `sw` instruction **does not perform a register write-back**, since its purpose is to update memory rather than the Register File.
+
