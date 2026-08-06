@@ -1790,3 +1790,134 @@ With these datapath and controller enhancements, the processor can correctly exe
 <p align="center">
   <em>Table-5 <code>ImmSrc</code> encoding</em>
 </p>
+
+
+## Performance Analysis
+
+The execution time of a processor depends on three primary factors:
+
+- **Instruction Count (IC)** – Total number of instructions executed.
+- **Cycles Per Instruction (CPI)** – Average number of clock cycles required to execute each instruction.
+- **Clock Cycle Time (`T<sub>c</sub>`)** – Duration of one clock cycle.
+
+The overall execution time is therefore given by:
+
+```text
+Execution Time = Instruction Count × CPI × Clock Cycle Time
+```
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-17%20Enhanced%20control%20unit%20for%20jal.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-i-7 Enhanced control unit for <code>jal</code></em>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Table-6%20Main%20Decoder%20truth%20table%20enhanced%20to%20support%20jal.png" width="500">
+</p>
+
+<p align="center">
+  <em>Table-6 Main Decoder truth table enhanced to support <code>jal</code></em>
+</p>
+For the implemented **single-cycle RISC-V processor**, every instruction completes within **one clock cycle**. Therefore,
+
+- **CPI = 1**
+
+Since every instruction must finish within a single clock period, the clock cycle must be long enough to accommodate the **slowest instruction**. Consequently, the processor's operating frequency is determined by the **critical path** of the datapath.
+
+### Critical Path
+
+Among all supported instructions, the **`lw` (Load Word)** instruction has the longest execution path because it accesses both the instruction memory and the data memory while also performing address calculation and register write-back.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-18%20Critical%20path%20for%20lw.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Figure: Fig-i-8 Critical path for <code>lw</code></em>
+</p>
+
+The critical path follows the sequence below:
+
+1. The **Program Counter (`PC`)** updates on the rising edge of the clock.
+2. **Instruction Memory** fetches the instruction.
+3. The **Register File** reads the source register (`rs1`) to produce `SrcA`.
+4. Simultaneously, the **Immediate Generator (Extend Unit)** sign-extends the immediate selected by `ImmSrc`, and the **Source B Multiplexer** selects it as `SrcB`.
+5. The **ALU** computes the effective memory address by adding `SrcA` and `SrcB`.
+6. **Data Memory** reads the data stored at the computed address.
+7. The **Result Multiplexer** selects the memory output (`ReadData`) as the value to be written back.
+8. Finally, the data must satisfy the **Register File setup time** before the next rising clock edge so that it can be written correctly.
+
+> **Note:** The `lw` instruction does not use the second read port (`A2/RD2`) of the Register File.
+
+The complete clock cycle time for the single-cycle processor is therefore expressed as:
+
+```text
+Tc_single = tPCQ + tIMEM + tRFread + tDecoder + tExtend + tMUX
+          + tALU + tDMEM + tMUX + tRFsetup
+```
+
+In most hardware implementations, the **ALU**, **memories**, and **Register File** contribute significantly more delay than the decoder, immediate generator, or multiplexers. As a result, the actual critical path is dominated by these major components, allowing the clock cycle time to be approximated as:
+
+```text
+Tc_single = tPCQ + tIMEM + tRFread + tALU
+          + tDMEM + tMUX + tRFsetup
+```
+
+The exact propagation delays depend on the target fabrication technology and hardware implementation.
+
+### Impact on Processor Performance
+
+Although other instructions, such as **R-type arithmetic instructions**, have shorter execution paths because they do not access the data memory, the processor still operates with a **fixed clock period**.
+
+Since the design follows **synchronous sequential principles**, every instruction must execute within the same clock period. Therefore, the clock frequency is always determined by the **slowest instruction (`lw`)**, causing faster instructions to complete earlier but still wait until the next clock edge before execution can continue.
+
+---
+
+## Single-Cycle Processor Performance Example
+
+Consider a **7 nm CMOS** implementation of the single-cycle RISC-V processor with the component delays specified in **Table 7.7**.
+
+Using the simplified critical path equation:
+
+```text
+Tc_single = tPCQ + tIMEM + tRFread + tALU
+          + tDMEM + tMUX + tRFsetup
+```
+
+Substituting the given delays:
+
+```text
+Tc_single = 40 + 200 + 200 + 100 + 120 + 30 + 60
+          = 750 ps
+```
+
+Thus, the processor requires **750 ps** to complete each instruction.
+
+For a program consisting of **100 billion instructions**:
+
+- **Instruction Count = 100 × 10⁹**
+- **CPI = 1**
+- **Clock Cycle Time = 750 ps**
+
+The total execution time becomes:
+
+```text
+Execution Time
+= (100 × 10⁹) × (1) × (750 × 10⁻¹²)
+
+= 75 seconds
+```
+
+Therefore, the program requires **75 seconds** to execute on the single-cycle processor.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Table-7%20Delay%20of%20circuit%20elements.png" width="1000">
+</p>
+
+<p align="center">
+  <em>Table-7 Delay of circuit elements</em>
+</p>
+
