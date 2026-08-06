@@ -1807,7 +1807,7 @@ Execution Time = Instruction Count × CPI × Clock Cycle Time
 ```
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-17%20Enhanced%20control%20unit%20for%20jal.png" width="1000">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Fig-17%20Enhanced%20control%20unit%20for%20jal.png" width="500">
 </p>
 
 <p align="center">
@@ -1815,7 +1815,7 @@ Execution Time = Instruction Count × CPI × Clock Cycle Time
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Table-6%20Main%20Decoder%20truth%20table%20enhanced%20to%20support%20jal.png" width="500">
+  <img src="https://raw.githubusercontent.com/soumya-dev-nayak/RISC-V-SINGLE-CYCLE-CORE/main/pics/Table-6%20Main%20Decoder%20truth%20table%20enhanced%20to%20support%20jal.png" width="1000">
 </p>
 
 <p align="center">
